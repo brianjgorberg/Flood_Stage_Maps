@@ -1,0 +1,33 @@
+GSSHA Version 8.0.024_dev - Jul  3 2025
+
+
+_________GSSHA start-up information________
+Run parameters read from WMS project file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\Waiahole_FIM_Model.prj
+reading watershed mask from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\Waiahole_FIM_Model.msk
+number of grid cells in watershed: 10301
+reading elevation map from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\Waiahole_FIM_Model.ele
+outlet is in grid cell: 2959
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\Waiahole_FIM_Model_bc.idx category 1 has 10194 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\Waiahole_FIM_Model_bc.idx category 2 has 106 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\Waiahole_FIM_Model_bc.idx category 3 has 1 values
+reading roughness table and map from master table file
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 2 has 1087 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 3 has 917 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 4 has 1907 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 5 has 252 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 6 has 3593 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 7 has 830 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 8 has 181 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 9 has 10 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 10 has 228 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 11 has 304 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 12 has 441 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 13 has 18 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx category 16 has 533 values
+writing output for optimization to file 
+using precipitation data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\Waiahole_FIM_Model.gag
+Running.... 
+
+reading precip data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\Waiahole_FIM_Model.gag
+
+

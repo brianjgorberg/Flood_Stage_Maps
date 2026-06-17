@@ -1,0 +1,72 @@
+GSSHA_INDEX_MAP_TABLES
+INDEX_MAP                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx" "LU"
+INDEX_MAP                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\Waiahole_FIM_Model_bc.idx" "Waiahole_FIM_Model_bc"
+ROUGHNESS "LU"
+NUM_IDS 13
+ID    DESCRIPTION1                            DESCRIPTION2                                   ROUGH
+2     Impervious Surface                                                                  0.020000
+3     Open Space Developed                                                                0.045000
+4     Cultivated Land                                                                     0.037000
+5     Grassland                                                                           0.034000
+6     Evergreen                                                                           0.110000
+7     Scrub Shrub                                                                         0.050000
+8     Palustrine Forested Wetland                                                         0.100000
+9     Palustrine Scrub Shrub Wetland                                                      0.048000
+10    Palustrine Emergent Wetland                                                         0.045000
+11    Estuarine Forested Wetland                                                          0.100000
+12    Estuarine Scrub Shrub Wetland                                                       0.048000
+13    Estuarine Emergent Wetland                                                          0.045000
+16    Open Water                                                                          0.020000
+GREEN_AMPT_INFILTRATION ""
+NUM_IDS 0
+ID    DESCRIPTION1                            DESCRIPTION2                               HYDR_COND  CAPIL_HEAD    POROSITY  PORE_INDEX   RESID_SAT FIELD_CAPACITY  WILTING_PT
+GREEN_AMPT_INITIAL_SOIL_MOISTURE ""
+NUM_IDS 0
+ID    DESCRIPTION1                            DESCRIPTION2                            SOIL_MOISTURE
+RICHARDS_EQN_INFILTRATION_BROOKS  ""
+NUM_IDS 0
+MAX_NUMBER_CELLS 0
+ID    DESCRIPTION1                            DESCRIPTION2                                HYD_COND    POROSITY   RESID_SAT  SOIL_MOIST  WILTING_PT FIELD_CAPACITY       DEPTH      LAMBDA   BUB_PRESS     DELTA_Z
+RICHARDS_EQN_INFILTRATION_HAVERCAMP  ""
+NUM_IDS 0
+MAX_NUMBER_CELLS 0
+ID    DESCRIPTION1                            DESCRIPTION2                                HYD_COND    POROSITY   RESID_SAT  SOIL_MOIST  WILTING_PT FIELD_CAPACITY       DEPTH       ALPHA        BETA        AHAV        BHAV     DELTA_Z
+MULTI_LAYER_SOIL  ""
+NUM_IDS 0
+MAX_SOIL_ID 0
+ID    DESCRIPTION1                            DESCRIPTION2                                HYD_COND  PORE_INDEX  CAPIL_HEAD    POROSITY   FIELD_CAP  WILTING_PT   RESID_SAT  SOIL_MOIST       DEPTH
+EVAPOTRANSPIRATION ""
+NUM_IDS 0
+ID    DESCRIPTION1                            DESCRIPTION2                                  ALBEDO  VEG_HEIGHT  V_RAD_COEF CANOPY_RESIST
+SEDIMENTS
+NUM_SED  0
+Sediment Description                      Spec. Grav   Part. Dia     Output Filename
+SOIL_EROSION_PROPS ""
+NUM_IDS 0
+NUM_SED 0
+ID    DESCRIPTION1                            DESCRIPTION2                             SPLASH_COEF DETACH_COEF  DETACH_EXP DETACH_CRIT    SED_COEF   0 SEDIMENTS....
+GROUNDWATER ""
+NUM_IDS 0
+ID    DESCRIPTION1                            DESCRIPTION2                                HYD_COND    POROSITY
+PERMAFROST_LAYER_SOIL ""
+NUM_IDS 0
+MAX_NUMBER_LAYERS 4
+DN_INIT_MAX 1
+DN_MAX 1
+INIT_TEMP_FILE Waiahole_FIM_Model_init_temp.txt
+DEP_NODE_FILE Waiahole_FIM_Model_dep_node.txt
+OUT_NODE_FILE Waiahole_FIM_Model_out_node.txt
+ID    DESCRIPTION1                            DESCRIPTION2                               LAYERNUMS     Dn_init          Dn      Dn_out       thick         tfr        wvol        wunf        aclv        bclv        cclv     cond_th     cond_fr        Cvol
+TIME_SERIES_INDEX
+NUM_IDS 1
+ID    Time series name
+3     "FIM_FLOW"
+OVERLAND_BOUNDARY "Waiahole_FIM_Model_bc"
+NUM_IDS 3
+ID    DESCRIPTION1                            DESCRIPTION2                                BDY_TYPE   BDY_PARAM
+1     normal cells                                                                               0        0.00
+2     constant depth                                                                             2    0.000000
+3     variable flow                                                                              5          3
+WETLAND_PROPERTIES "wetlands"
+NUM_IDS 0
+ID                                                                                      INIT_DEPTH   RET_DEPTH RET_HYD_CON  VEG_HEIGHT VEG_HYD_CON   OVR_VEG_N
