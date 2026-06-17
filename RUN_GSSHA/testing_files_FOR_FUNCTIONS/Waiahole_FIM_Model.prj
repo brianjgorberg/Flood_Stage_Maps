@@ -1,0 +1,36 @@
+GSSHAPROJECT
+WMS WMS 11.1.10 (64-bit)
+WATERSHED_MASK            "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.msk"
+PROJECT_PATH              "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\"
+#LandSoil                 "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.lsf"
+#PROJECTION_FILE          "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model_prj.pro"
+NON_ORTHO_CHANNELS        
+FLINE                     "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.map"
+METRIC                    
+GRIDSIZE                  10.000000
+ROWS                      107
+COLS                      187
+TOT_TIME                  500
+TIMESTEP                  30
+OUTROW                    55
+OUTCOL                    183
+OUTSLOPE                  0.001000
+MAP_FREQ                  60
+HYD_FREQ                  60
+MAP_TYPE                  1
+ELEVATION                 "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.ele"
+DEPTH                     "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.dep"
+FLOOD_GRID                "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model_12.0.gfl"
+TIME_SERIES_FILE          "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.xys"
+OVERTYPE                  ADE
+#INDEXGRID_GUID           "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\LU.idx" "5a02e02f-57f7-4278-a3de-d344dd2b9b4e" 0
+OV_BOUNDARY               
+#OV_BOUNDARY_TSF          "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model_bc.tsf"
+MAPPING_TABLE             "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.cmt"
+SUMMARY                   "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.sum"
+OUTLET_HYDRO              "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.otl"
+QUIET                     
+PRECIP_FILE               "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.gag"
+RAIN_INV_DISTANCE         
+OVERLAND_WSE_LOCATION     "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model.owi"
+OVERLAND_WSE              "C:\Users\bgorberg\Documents\WMS_2025\Waiahole\Waiahole_Waikane_Python\RUN_GSSHA\Waiahole_FIM_Model_FINAL_Flood_Maps\Waiahole_FIM_Model_1.ows"
