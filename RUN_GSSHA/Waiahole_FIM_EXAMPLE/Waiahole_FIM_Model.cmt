@@ -1,6 +1,6 @@
 GSSHA_INDEX_MAP_TABLES
-INDEX_MAP                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\LU.idx" "LU"
-INDEX_MAP                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM\Waiahole_FIM_Model_bc.idx" "Waiahole_FIM_Model_bc"
+INDEX_MAP                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_EXAMPLE\LU.idx" "LU"
+INDEX_MAP                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_EXAMPLE\Waiahole_FIM_Model_bc.idx" "Waiahole_FIM_Model_bc"
 ROUGHNESS "LU"
 NUM_IDS 13
 ID    DESCRIPTION1                            DESCRIPTION2                                   ROUGH
@@ -62,11 +62,12 @@ NUM_IDS 1
 ID    Time series name
 3     "FIM_FLOW"
 OVERLAND_BOUNDARY "Waiahole_FIM_Model_bc"
-NUM_IDS 3
+NUM_IDS 4
 ID    DESCRIPTION1                            DESCRIPTION2                                BDY_TYPE   BDY_PARAM
 1     normal cells                                                                               0        0.00
-2     constant depth                                                                             2    0.000000
+2     constant depth                                                                             2    0.480000
 3     variable flow                                                                              5          3
+4     constant depth                                                                             2    0.000000
 WETLAND_PROPERTIES "wetlands"
 NUM_IDS 0
 ID                                                                                      INIT_DEPTH   RET_DEPTH RET_HYD_CON  VEG_HEIGHT VEG_HYD_CON   OVR_VEG_N
