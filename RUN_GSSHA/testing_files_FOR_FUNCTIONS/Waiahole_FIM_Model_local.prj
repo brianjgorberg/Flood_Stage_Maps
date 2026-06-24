@@ -1,0 +1,36 @@
+GSSHAPROJECT
+WMS WMS 11.1.10 (64-bit)
+WATERSHED_MASK            "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.msk"
+PROJECT_PATH              "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/"
+#LandSoil                 "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.lsf"
+#PROJECTION_FILE          "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model_prj.pro"
+NON_ORTHO_CHANNELS        
+FLINE                     "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.map"
+METRIC                    
+GRIDSIZE                  10.000000
+ROWS                      107
+COLS                      187
+TOT_TIME                  500
+TIMESTEP                  30
+OUTROW                    55
+OUTCOL                    183
+OUTSLOPE                  0.001000
+MAP_FREQ                  60
+HYD_FREQ                  60
+MAP_TYPE                  1
+ELEVATION                 "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.ele"
+DEPTH                     "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.dep"
+FLOOD_GRID                "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model_12.0.gfl"
+TIME_SERIES_FILE          "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.xys"
+OVERTYPE                  ADE
+#INDEXGRID_GUID           "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/LU.idx" "5a02e02f-57f7-4278-a3de-d344dd2b9b4e" 0
+OV_BOUNDARY               
+#OV_BOUNDARY_TSF          "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model_bc.tsf"
+MAPPING_TABLE             "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.cmt"
+SUMMARY                   "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.sum"
+OUTLET_HYDRO              "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.otl"
+QUIET                     
+PRECIP_FILE               "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.gag"
+RAIN_INV_DISTANCE         
+OVERLAND_WSE_LOCATION     "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model.owi"
+OVERLAND_WSE              "/Users/reimiyashiro/Documents/Flood_Stage_Maps/RUN_GSSHA/testing_files_FOR_FUNCTIONS/Waiahole_FIM_Model_1.ows"
