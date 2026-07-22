@@ -8,7 +8,24 @@
 
 
 # In[1]:
+import os
+import re
+import math
+import shutil
+import subprocess
 
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
+from matplotlib.dates import DateFormatter
+from dateutil.tz import tzutc, tzlocal
+from scipy import stats
+from scipy.optimize import brentq, curve_fit, fsolve
 
 def create_tides_timeseries_string(tides_df, tsf_file_path):
     """
@@ -574,6 +591,79 @@ def replace_value_in_gssha_file(read_dir, gssha_sample_file, save_filename, new_
         file.write(updated_content)
 
     return save_path
+
+
+def max_OWS(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+    
+    max_value = float('-inf')
+    for line in lines:
+        parts = line.strip().split()
+        if len(parts) >= 2:
+            try:
+                value = float(parts[1])
+                if value > max_value:
+                    max_value = value
+            except ValueError:
+                continue  # Skip non-numeric values
+    return max_value
+
+def max_OWS(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+    
+    max_value = float('-inf')
+    for line in lines:
+        parts = line.strip().split()
+        if len(parts) >= 2:
+            try:
+                value = float(parts[1])
+                if value > max_value:
+                    max_value = value
+            except ValueError:
+                continue  # Skip non-numeric values
+    return max_value
+
+def invert_hybrid_safe(target_wse, a, b, c, q_lo=0.0, q_hi=None, max_expand=40):
+    """
+    Robustly invert hybrid_fit(Q) = target_wse for Q >= 0.
+    Expands the upper bracket until sign change or until max_expand attempts.
+    Returns np.nan if no bracket is found (target out of modeled range).
+    """
+    # Lower bound (flows can't be negative)
+    lo = max(0.0, float(q_lo))
+    f_lo = hybrid_fit(lo, a, b, c) - target_wse
+
+    # Start upper bound
+    if q_hi is None:
+        q_hi = max(1.0, float(np.nanmax(flow_valid)) if len(flow_valid) else 1.0)
+    hi = float(q_hi)
+    f_hi = hybrid_fit(hi, a, b, c) - target_wse
+
+    # If already bracketed, solve
+    if f_lo == 0:
+        return lo
+    if f_lo * f_hi < 0:
+        return brentq(lambda Q: hybrid_fit(Q, a, b, c) - target_wse, lo, hi)
+
+    # Expand upward until bracket or give up
+    attempts = 0
+    while attempts < max_expand and np.isfinite(f_hi) and (f_lo * f_hi > 0):
+        hi *= 2.0
+        f_hi = hybrid_fit(hi, a, b, c) - target_wse
+        attempts += 1
+
+    if np.isfinite(f_hi) and f_lo * f_hi < 0:
+        return brentq(lambda Q: hybrid_fit(Q, a, b, c) - target_wse, lo, hi)
+
+    # No bracket found → target outside modeled range
+    return np.nan
+
+def hybrid_fit(Q, a, b, c):
+    # use log(Q+1) to avoid log(0) and allow Q=0
+    return a * np.log(Q + 1.0) + b * Q + c
+
 
 # In[ ]:
 

@@ -1,0 +1,138 @@
+GSSHA Version 8.0.024_dev - Jul  3 2025
+
+
+_________GSSHA start-up information________
+Run parameters read from WMS project file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_MODEL.prj
+reading watershed mask from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.msk
+number of grid cells in watershed: 10301
+reading elevation map from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.ele
+outlet is in grid cell: 2959
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model_bc.idx category 1 has 10194 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model_bc.idx category 2 has 106 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model_bc.idx category 3 has 1 values
+reading roughness table and map from master table file
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 2 has 1087 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 3 has 917 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 4 has 1907 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 5 has 252 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 6 has 3593 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 7 has 830 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 8 has 181 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 9 has 10 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 10 has 228 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 11 has 304 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 12 has 441 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 13 has 18 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 16 has 533 values
+writing output for optimization to file 
+Running.... 
+
+reading precip data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.gag
+
+
+         GSSHA EVENT RUNOFF SIMULATION SUMMARY
+            Event began on 06/18/2026 at 00:00
+With raingage data using inverse-distance squared interpolation.
+
+elevation and gridsize are in meters
+timestep                                    30.0 seconds
+number of timesteps with rain =             0
+elapsed time when rain began =              -0.50
+ 
+peak occured on strict Julian date =       2461209.83993056
+date/time of peak discharge =              6/18/2026  8:09:30
+Event peak discharge (cubic meters per second) =        0.3562
+
+Note = all volumes in cubic meters.
+initial volume of overland flow =                   0.0
+initial liquid-equiv. volume of snow =              0.0
+initial volume of melt water =                     0.0
+ 
+volume of rainfall to overland =                   0.0
+volume of interception =                           0.0
+volume of direct evaporation =                     0.0
+volume of infiltrated water =                      0.0
+volume of water exfiltrated =                      0.0
+volume of discharge =                           8882.3
+volume from overland point sources =               0.0
+
+Volume to specified head (out) =             2033596.8
+Volume from specified head (in) =             704898.1
+Volume to specified slope (out) =                  0.0
+Volume from specified discharge (in) =        1504718.2
+Volume to specified discharge (out) =              0.0
+Volume of specified discharge unmet =              0.0
+
+
+volume remaining on surface =                 167137.3
+final volume of snow (cu. m) =                     0.0
+final volume of melt water (cu. m) =               0.0
+mass conservation error =                         -0.000000 percent
+Note: negative mass conservation error indicates mass was created (out>in).
+Mass input + original mass =             2209616.339367 m3
+Mass output + final mass =               2209616.339367 m3
+mass cleanup error from overland =             0.000000 m3
+
+
+THE FOLLOWING WARNINGS ARE GIVEN:
+
+ THE FOLLOWING INPUTS WERE READ:
+A WMS Project File was used.
+Floating point GRASS maps were read.
+
+ THE FOLLOWING PROCESSES WERE SIMULATED:
+Distributed overland roughness.
+Distributed initial soil moisture.
+
+ THE FOLLOWING OUTPUT MAPS WERE WRITTEN EVERY 120 TIMESTEP(S):
+ASCII WMS maps of:
+     overland flow depth.
+
+ THE FOLLOWING ASCII OUTPUT FILES WERE WRITTEN TO EVERY 120 TIMESTEP(S):
+     hydrograph at the catchment outlet.
+
+ 
+SIMULATION TOTALS
+GLOBAL MASS BALANCE CALCULATIONS 
+All volumes are in cubic meters 
+ 
+Initial volume on surface =                                0.00 
+Initial volume in channels =                               0.00 
+Initial volume in soils =                                  0.00 
+Initial volume in groundwater =                            0.00 
+
+Final volume on surface =                             167137.27
+Final volume in channels =                                 0.00
+Final volume in soils =                                    0.00
+Final volume in groundwater =                              0.00
+Final volume of snow =                                     0.00
+Final volume of melt water =                               0.00
+
+Total amount of precip =                                   0.00
+Total amount of interception =                             0.00
+Total amount of canopy sublimation =                       0.00
+Total amount of infiltration =                             0.00
+Total amount of evaporation =                              0.00
+Total direct evaporation =                                 0.00
+Total amount of exfiltration =                             0.00
+
+Total downward flux from unsaturated zone =                0.00
+Total flux of gw across bounds =                           0.00
+Total overland point sources =                             0.00
+Total channel point sources =                              0.00
+
+Volume overland lost to specified head boundary =             2033596.76
+Volume overland gained from specified head boundary =          704898.13
+Volume overland lost to specified slope boundary =                   0.00
+Volume overland gained from specified discharge boundary =     1504718.20
+Volume overland lost from specified discharge boundary =             0.00
+Volume of overland specified discharge boundary unmet =              0.00
+
+Total lateral inflow into channels =                       0.00
+Total amount of discharge =                             8882.31
+
+Mass balance error of surface components =               -0.000000 percent
+
+Overall mass balance error =                             -0.000000 percent
+ 
+

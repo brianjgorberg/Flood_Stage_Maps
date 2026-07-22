@@ -8,7 +8,24 @@
 
 
 # In[1]:
+import os
+import re
+import math
+import shutil
+import subprocess
 
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
+from matplotlib.dates import DateFormatter
+from dateutil.tz import tzutc, tzlocal
+from scipy import stats
+from scipy.optimize import brentq, curve_fit, fsolve
 
 def create_tides_timeseries_string(tides_df, tsf_file_path):
     """
