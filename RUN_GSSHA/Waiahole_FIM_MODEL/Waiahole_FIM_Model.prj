@@ -1,37 +1,36 @@
 GSSHAPROJECT
-WMS WMS 11.3.3 (64-bit)
-WATERSHED_MASK           "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.msk"
-PROJECT_PATH             "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\"
-#LandSoil                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.lsf"
-#PROJECTION_FILE         "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model_prj.pro"
-NON_ORTHO_CHANNELS
-FLINE                    "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.map"
-METRIC
-GRIDSIZE                 10.000000
-ROWS                     321
-COLS                     239
-TOT_TIME                 2040
-TIMESTEP                 30
-OUTROW                   1
-OUTCOL                   85
-OUTSLOPE                 0.001000
-MAP_FREQ                 30
-HYD_FREQ                 1
-MAP_TYPE                 1
-ELEVATION                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.ele"
-DEPTH                    "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.dep"
-FLOOD_GRID               "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.gfl"
-TIME_SERIES_FILE         "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.xys"
-OVERTYPE                 ADE
-#INDEXGRID_GUID          "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx" "7dbda11b-c899-420e-a4b2-9885ea0691e0" 0
-OV_BOUNDARY
-#OV_BOUNDARY_TSF         "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model_bc.tsf"
-MAPPING_TABLE            "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.cmt"
-SUMMARY                  "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.sum"
-OUTLET_HYDRO             "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.otl"
-PRECIP_FILE              "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.gag"
-RAIN_INV_DISTANCE
-OVERLAND_WSE_LOCATION    "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.owi"
-OVERLAND_WSE             "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.ows"
-OVERLAND_Q_CUM_LOCATION  "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.cdl"
-CUM_DISCHARGE            "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.oqc"
+WMS WMS 11.1.10 (64-bit)
+WATERSHED_MASK            "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.msk"
+PROJECT_PATH              "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\"
+#LandSoil                 "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.lsf"
+#PROJECTION_FILE          "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model_prj.pro"
+NON_ORTHO_CHANNELS        
+FLINE                     "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.map"
+METRIC                    
+GRIDSIZE                  10.000000
+ROWS                      107
+COLS                      187
+TOT_TIME                  500
+TIMESTEP                  30
+OUTROW                    55
+OUTCOL                    183
+OUTSLOPE                  0.001000
+MAP_FREQ                  60
+HYD_FREQ                  60
+MAP_TYPE                  1
+ELEVATION                 "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.ele"
+DEPTH                     "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.dep"
+FLOOD_GRID                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.gfl"
+TIME_SERIES_FILE          "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.xys"
+OVERTYPE                  ADE
+#INDEXGRID_GUID           "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx" "70df51df-d282-4004-bcff-b2b6cf5d8063" 0
+OV_BOUNDARY               
+#OV_BOUNDARY_TSF          "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model_bc.tsf"
+MAPPING_TABLE             "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.cmt"
+SUMMARY                   "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.sum"
+OUTLET_HYDRO              "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_MODEL_flowGSSHATimingTEST_streamoutlet50.otl"
+QUIET                     
+PRECIP_FILE               "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.gag"
+RAIN_INV_DISTANCE         
+OVERLAND_WSE_LOCATION     "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.owi"
+OVERLAND_WSE              "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_MODEL_flowFIMTEST_USGSgauge_50.ows"

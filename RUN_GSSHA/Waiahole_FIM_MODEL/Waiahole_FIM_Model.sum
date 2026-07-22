@@ -25,6 +25,7 @@ In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FI
 In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 13 has 18 values
 In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\LU.idx category 16 has 533 values
 writing output for optimization to file 
+using precipitation data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.gag
 Running.... 
 
 reading precip data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waiahole_FIM_MODEL\Waiahole_FIM_Model.gag

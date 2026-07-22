@@ -1,0 +1,37 @@
+GSSHAPROJECT
+WMS WMS 11.3.3 (64-bit)
+WATERSHED_MASK           "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.msk"
+PROJECT_PATH             "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\"
+#LandSoil                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.lsf"
+#PROJECTION_FILE         "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing_prj.pro"
+NON_ORTHO_CHANNELS
+FLINE                    "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.map"
+METRIC
+GRIDSIZE                 10.000000
+ROWS                     321
+COLS                     239
+TOT_TIME                 2040
+TIMESTEP                 30
+OUTROW                   1
+OUTCOL                   85
+OUTSLOPE                 0.001000
+MAP_FREQ                 30
+HYD_FREQ                 1
+MAP_TYPE                 1
+ELEVATION                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.ele"
+DEPTH                    "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.dep"
+FLOOD_GRID               "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.gfl"
+TIME_SERIES_FILE         "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.xys"
+OVERTYPE                 ADE
+#INDEXGRID_GUID          "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx" "41c803a7-b604-4c67-a35b-ba390bd9809f" 0
+OV_BOUNDARY
+#OV_BOUNDARY_TSF         "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing_bc.tsf"
+MAPPING_TABLE            "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.cmt"
+SUMMARY                  "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.sum"
+OUTLET_HYDRO             "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.otl"
+PRECIP_FILE              "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.gag"
+RAIN_INV_DISTANCE
+OVERLAND_WSE_LOCATION    "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.owi"
+OVERLAND_WSE             "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.ows"
+OVERLAND_Q_CUM_LOCATION  "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.cdl"
+CUM_DISCHARGE            "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.oqc"

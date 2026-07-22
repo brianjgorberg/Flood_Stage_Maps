@@ -560,7 +560,7 @@ def GET_STATS(merged_dataframe_start_datetime_list):
     return result
 
 
-def replace_value_in_gssha_file(read_dir, gssha_sample_file, save_filename, new_value):
+def replace_value_in_gssha_file(read_dir, gssha_sample_file, save_filename, old_value, new_value):
     """
     Reads a GSSHA sample file, replaces all occurrences of '100.0' with the new_value,
     and saves the updated file in the same directory with a new filename.
@@ -581,7 +581,7 @@ def replace_value_in_gssha_file(read_dir, gssha_sample_file, save_filename, new_
         content = file.read()
 
     # Replace all occurrences of '100.0' with the new value
-    updated_content = content.replace("XX", str(new_value))
+    updated_content = content.replace(old_value, str(new_value))
 
     # Full path for the output file (same directory)
     save_path = os.path.join(read_dir, save_filename)
@@ -592,22 +592,6 @@ def replace_value_in_gssha_file(read_dir, gssha_sample_file, save_filename, new_
 
     return save_path
 
-
-def max_OWS(file_path):
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
-    
-    max_value = float('-inf')
-    for line in lines:
-        parts = line.strip().split()
-        if len(parts) >= 2:
-            try:
-                value = float(parts[1])
-                if value > max_value:
-                    max_value = value
-            except ValueError:
-                continue  # Skip non-numeric values
-    return max_value
 
 def max_OWS(file_path):
     with open(file_path, 'r') as file:
