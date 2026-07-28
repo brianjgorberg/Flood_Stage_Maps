@@ -1,6 +1,6 @@
 GSSHA_INDEX_MAP_TABLES
 INDEX_MAP                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx" "LU"
-INDEX_MAP                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing_bc.idx" "WMS_Waialua_GSSHA_bc"
+INDEX_MAP                "C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing_bc.idx" "Waialua_test_bc"
 ROUGHNESS "LU"
 NUM_IDS 13
 ID    DESCRIPTION1                            DESCRIPTION2                                   ROUGH
@@ -61,7 +61,7 @@ TIME_SERIES_INDEX
 NUM_IDS 1
 ID    Time series name
 3     "ts_119"
-OVERLAND_BOUNDARY "WMS_Waialua_GSSHA_bc"
+OVERLAND_BOUNDARY "Waialua_test_bc"
 NUM_IDS 3
 ID    DESCRIPTION1                            DESCRIPTION2                                BDY_TYPE   BDY_PARAM
 1     normal cells                                                                               0        0.00

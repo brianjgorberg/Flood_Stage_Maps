@@ -1,0 +1,102 @@
+---- GSSHA OUTPUT ----
+Parallel version of GSSHA (8.0.024 Release, Jul  3 2025) with SCE (OpenMP), 64 bit, 32 total threads.
+reading run parameters from project file: Waialua_FIM_testing.prj
+Check time series file:1899 12 30 0 400
+Check time series file:1899 12 30 1 400
+Check time series file:1899 12 30 2 400
+Check time series file:1899 12 30 3 400
+Check time series file:1899 12 30 4 400
+Check time series file:1899 12 30 5 400
+Check time series file:1899 12 30 6 400
+Check time series file:1899 12 30 7 400
+Check time series file:1899 12 30 8 400
+Check time series file:1899 12 30 9 400
+Check time series file:1899 12 30 10 400
+Check time series file:1899 12 30 11 400
+Check time series file:1899 12 30 12 400
+Check time series file:1899 12 30 13 400
+Check time series file:1899 12 30 14 400
+Check time series file:1899 12 30 15 400
+Check time series file:1899 12 30 16 400
+Check time series file:1899 12 30 17 400
+Check time series file:1899 12 30 18 400
+Check time series file:1899 12 30 19 400
+Check time series file:1899 12 30 20 400
+Check time series file:1899 12 30 21 400
+Check time series file:1899 12 30 22 400
+Check time series file:1899 12 30 23 400
+Check time series file:1899 12 31 0 400
+writing output for optimization to file 
+Read time series ts_119
+1 time series read from file C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.xys
+
+Checking for presence and consistency of 2D grid mapping tables in the mapping table file...
+  Roughness..........................Y
+  Rough_exp..........................N
+  Ovr_flow_block.....................N
+  Interception.......................N
+  Retention..........................N
+  G&A Infiltration...................N
+  G&A Soil Moisture..................N
+  Multi layer G&A Infiltration.......N
+  Richards Havercamp.................N
+  Richards Brooks....................N
+  Evapotranspiration.................N
+  Snow Canopy Interception...........N
+  Sediments..........................N
+  Sediment Erosion Properties........N
+  Contaminants.......................N
+  Wetlands...........................N
+  Overland Boundary..................Y
+  Groundwater Wells..................N
+  Groundwater........................N
+  Groundwater Boundary...............N
+  Area Reduction.....................N
+  NSM Nitrogen.......................N
+  NSM Phosphorus.....................N
+  NSM Other..........................N
+  NSM Carbon.........................N
+  NSM Dispersion.....................N
+  NSM Soil Carbon....................N
+  NSM Soil Nitrogen..................N
+  NSM Soil Phosphorus................N
+  NSM Groundwater Nitrogen...........N
+  NSM Groundwater Phosphorus.........N
+  NSM Groundwater Other..............N
+  NSM Soil Km........................N
+  NSM Soil Koc.......................N
+  BMP Point Models...................N
+
+finished reading project file
+reading watershed mask from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.msk
+number of grid cells in watershed: 39821
+reading elevation map from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.ele
+outlet is in grid cell: 2
+Adding table to list: ts_119... reading roughness table and map from master table file
+building cell to cell connectivity information
+using precipitation data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.gag
+End of precipitation input file reached.
+Precip. file contains 1 events, simulating first event only
+because LONG_TERM project file card not set in project file.
+total time to init(s):      0.1
+Running....
+reading precip data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.gag
+WARNING: you have a long delta t in your precip file (>1 day) [Time:30 12 1899]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:29  4 1900]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:28  6 1900]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:27  8 1900]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:26 10 1900]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:25 12 1900]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:24  4 1901]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:23  6 1901]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:22  8 1901]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:21 10 1901]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:20 12 1901]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:19  4 1902]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:18  6 1902]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:17  8 1902]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:16 10 1902]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:15 12 1902]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:14  4 1903]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:13  6 1903]
+WARNING: you have a long delta t in your p

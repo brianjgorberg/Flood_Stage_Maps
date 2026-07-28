@@ -1,0 +1,33 @@
+GSSHA Version 8.0.024_dev - Jul  3 2025
+
+
+_________GSSHA start-up information________
+Run parameters read from WMS project file: Waialua_FIM_testing.prj
+reading watershed mask from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.msk
+number of grid cells in watershed: 39821
+reading elevation map from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.ele
+outlet is in grid cell: 2
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing_bc.idx category 1 has 39672 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing_bc.idx category 2 has 148 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing_bc.idx category 3 has 1 values
+reading roughness table and map from master table file
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 1 has 8072 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 2 has 4178 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 3 has 10777 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 4 has 6289 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 5 has 5512 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 6 has 2482 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 7 has 141 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 8 has 403 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 9 has 207 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 10 has 27 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 11 has 209 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 12 has 576 values
+In map C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\LU.idx category 13 has 948 values
+writing output for optimization to file 
+using precipitation data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.gag
+Running.... 
+
+reading precip data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.gag
+
+

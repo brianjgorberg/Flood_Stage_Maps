@@ -426,6 +426,26 @@ def move_and_rename_gssha_output(MODEL_DIR, RESULTS_DIR, output_description = "T
     print(f"✅ File '{original_file}' saved as '{new_name}' in Results folder.")
 
 
+def copy_text_file(folder_path, original_filename, new_filename):
+    """
+    Copies a text file and saves it with a new filename.
+
+    Parameters
+    ----------
+    folder_path : str
+        Path to the folder containing the file.
+    original_filename : str
+        Name of the existing text file.
+    new_filename : str
+        Name of the copied file.
+    """
+
+    source = Path(folder_path) / original_filename
+    destination = Path(folder_path) / new_filename
+
+    shutil.copy2(source, destination)
+
+
 def cleanup_model_dir(MODEL_DIR):
     # Remove copied EXEs and DLLs
     for file in os.listdir(MODEL_DIR):
