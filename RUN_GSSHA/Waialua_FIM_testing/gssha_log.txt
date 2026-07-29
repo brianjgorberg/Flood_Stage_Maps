@@ -1,31 +1,31 @@
 ---- GSSHA OUTPUT ----
 Parallel version of GSSHA (8.0.024 Release, Jul  3 2025) with SCE (OpenMP), 64 bit, 32 total threads.
 reading run parameters from project file: Waialua_FIM_testing.prj
-Check time series file:1899 12 30 0 400
-Check time series file:1899 12 30 1 400
-Check time series file:1899 12 30 2 400
-Check time series file:1899 12 30 3 400
-Check time series file:1899 12 30 4 400
-Check time series file:1899 12 30 5 400
-Check time series file:1899 12 30 6 400
-Check time series file:1899 12 30 7 400
-Check time series file:1899 12 30 8 400
-Check time series file:1899 12 30 9 400
-Check time series file:1899 12 30 10 400
-Check time series file:1899 12 30 11 400
-Check time series file:1899 12 30 12 400
-Check time series file:1899 12 30 13 400
-Check time series file:1899 12 30 14 400
-Check time series file:1899 12 30 15 400
-Check time series file:1899 12 30 16 400
-Check time series file:1899 12 30 17 400
-Check time series file:1899 12 30 18 400
-Check time series file:1899 12 30 19 400
-Check time series file:1899 12 30 20 400
-Check time series file:1899 12 30 21 400
-Check time series file:1899 12 30 22 400
-Check time series file:1899 12 30 23 400
-Check time series file:1899 12 31 0 400
+Check time series file:1899 12 30 0 1000
+Check time series file:1899 12 30 1 1000
+Check time series file:1899 12 30 2 1000
+Check time series file:1899 12 30 3 1000
+Check time series file:1899 12 30 4 1000
+Check time series file:1899 12 30 5 1000
+Check time series file:1899 12 30 6 1000
+Check time series file:1899 12 30 7 1000
+Check time series file:1899 12 30 8 1000
+Check time series file:1899 12 30 9 1000
+Check time series file:1899 12 30 10 1000
+Check time series file:1899 12 30 11 1000
+Check time series file:1899 12 30 12 1000
+Check time series file:1899 12 30 13 1000
+Check time series file:1899 12 30 14 1000
+Check time series file:1899 12 30 15 1000
+Check time series file:1899 12 30 16 1000
+Check time series file:1899 12 30 17 1000
+Check time series file:1899 12 30 18 1000
+Check time series file:1899 12 30 19 1000
+Check time series file:1899 12 30 20 1000
+Check time series file:1899 12 30 21 1000
+Check time series file:1899 12 30 22 1000
+Check time series file:1899 12 30 23 1000
+Check time series file:1899 12 31 0 1000
 writing output for optimization to file 
 Read time series ts_119
 1 time series read from file C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.xys
@@ -99,4 +99,26 @@ WARNING: you have a long delta t in your precip file (>1 day) [Time:16 10 1902]
 WARNING: you have a long delta t in your precip file (>1 day) [Time:15 12 1902]
 WARNING: you have a long delta t in your precip file (>1 day) [Time:14  4 1903]
 WARNING: you have a long delta t in your precip file (>1 day) [Time:13  6 1903]
-WARNING: you have a long delta t in your p
+WARNING: you have a long delta t in your precip file (>1 day) [Time:12  8 1903]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:11 10 1903]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:10 12 1903]
+WARNING: you have a long delta t in your precip file (>1 day) [Time: 8  4 1904]
+WARNING: you have a long delta t in your precip file (>1 day) [Time: 7  6 1904]
+WARNING: you have a long delta t in your precip file (>1 day) [Time: 6  8 1904]
+WARNING: you have a long delta t in your precip file (>1 day) [Time: 5 10 1904]
+WARNING: you have a long delta t in your precip file (>1 day) [Time: 4 12 1904]
+WARNING: you have a long delta t in your precip file (>1 day) [Time: 3  4 1905]
+WARNING: you have a long delta t in your precip file (>1 day) [Time: 2  6 1905]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:30  9 1905]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:29 11 1905]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:29  3 1906]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:28  5 1906]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:27  7 1906]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:25  9 1906]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:24 11 1906]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:24  3 1907]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:23  5 1907]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:22  7 1907]
+WARNING: you have a long delta t in your precip file (>1 day) [Time:20  9 1907]
+Initialized Arrays
+simulation duration 1000 minutes

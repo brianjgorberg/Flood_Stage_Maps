@@ -27,6 +27,14 @@ from dateutil.tz import tzutc, tzlocal
 from scipy import stats
 from scipy.optimize import brentq, curve_fit, fsolve
 
+
+import sys
+import signal
+import tempfile
+import time
+from collections import Counter
+from IPython.display import clear_output
+
 def create_tides_timeseries_string(tides_df, tsf_file_path):
     """
     Creates a string formatted as a tide file.
@@ -386,6 +394,658 @@ def run_gssha(MODEL_DIR, PROJECT_FILE):
     else:
         print("✅ GSSHA simulation ran successfully. Check gssha_log.txt for output.")
 
+def start_q_window(stop_file, close_file):
+    """
+    Open a small window where the user can type q and press Enter.
+
+    Creates stop_file when q is entered.
+    Closes automatically when close_file appears.
+    """
+
+    window_code = r"""
+import os
+import sys
+import tkinter as tk
+
+stop_file = sys.argv[1]
+close_file = sys.argv[2]
+
+root = tk.Tk()
+root.title("GSSHA Control")
+root.geometry("360x150")
+root.resizable(False, False)
+
+label = tk.Label(
+    root,
+    text="Type q and press Enter to stop GSSHA:",
+    font=("Arial", 11)
+)
+label.pack(pady=(20, 8))
+
+entry = tk.Entry(
+    root,
+    width=15,
+    justify="center",
+    font=("Arial", 14)
+)
+entry.pack()
+entry.focus_force()
+
+status = tk.Label(
+    root,
+    text="GSSHA is running",
+    font=("Arial", 10)
+)
+status.pack(pady=8)
+
+
+def submit_command(event=None):
+    command = entry.get().strip().lower()
+
+    if command == "q":
+        with open(stop_file, "w") as file:
+            file.write("stop")
+
+        status.config(text="Shutdown requested...")
+        entry.config(state="disabled")
+
+    else:
+        entry.delete(0, tk.END)
+        status.config(text="Type q, then press Enter.")
+
+
+def check_close_signal():
+    if os.path.exists(close_file):
+        root.destroy()
+        return
+
+    root.after(250, check_close_signal)
+
+
+entry.bind("<Return>", submit_command)
+
+# Allow manual window closing without stopping GSSHA.
+root.protocol("WM_DELETE_WINDOW", root.destroy)
+
+check_close_signal()
+root.mainloop()
+"""
+
+    return subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            window_code,
+            str(stop_file),
+            str(close_file)
+        ],
+        creationflags=subprocess.CREATE_NO_WINDOW
+    )
+
+def read_GSSHA_dep(folder_path, filename):
+    """
+    Read a GSSHA DEP file, including a potentially incomplete final
+    timestep.
+
+    Returns
+    -------
+    dict
+        {
+            "timesteps": list[float],
+            "depths": list[np.ndarray]
+        }
+    """
+
+    dep_file = os.path.join(folder_path, filename)
+
+    timesteps = []
+    depths = []
+
+    current_timestep = None
+    current_depths = []
+    reading = False
+
+    with open(
+        dep_file,
+        "r",
+        encoding="utf-8",
+        errors="replace"
+    ) as file:
+
+        for raw_line in file:
+            line = raw_line.strip()
+
+            if not line:
+                continue
+
+            if line.startswith("TS"):
+                # Save the previous timestep before beginning the new one.
+                if reading and current_timestep is not None:
+                    timesteps.append(current_timestep)
+                    depths.append(
+                        np.asarray(current_depths, dtype=np.float64)
+                    )
+
+                parts = line.split()
+
+                if len(parts) < 3:
+                    continue
+
+                current_timestep = float(parts[2])
+                current_depths = []
+                reading = True
+                continue
+
+            if line == "ENDDS":
+                if reading and current_timestep is not None:
+                    timesteps.append(current_timestep)
+                    depths.append(
+                        np.asarray(current_depths, dtype=np.float64)
+                    )
+
+                reading = False
+                current_timestep = None
+                current_depths = []
+                break
+
+            if reading:
+                try:
+                    current_depths.append(float(line))
+                except ValueError:
+                    # This may occur if GSSHA is writing the exact line
+                    # while Python is reading the file.
+                    continue
+
+    # During a live run, the file may end before ENDDS.
+    # Save the current block so calculate_dep_changes() can determine
+    # whether it is complete.
+    if reading and current_timestep is not None:
+        timesteps.append(current_timestep)
+        depths.append(
+            np.asarray(current_depths, dtype=np.float64)
+        )
+
+    return {
+        "timesteps": timesteps,
+        "depths": depths
+    }
+
+def calculate_dep_changes(
+    dep_data,
+    cell_size,
+    depth_threshold=0.01
+):
+    """
+    Calculate depth and inundated-area changes between consecutive
+    complete GSSHA DEP timesteps.
+    """
+
+    timesteps = dep_data["timesteps"]
+    depths = dep_data["depths"]
+
+    output_columns = [
+        "timestep",
+        "cumulative_change",
+        "max_positive_change_per_cell",
+        "inundated_area_change"
+    ]
+
+    if len(timesteps) != len(depths):
+        raise ValueError(
+            "dep_data['timesteps'] and dep_data['depths'] must have "
+            f"the same length. Found {len(timesteps)} timesteps and "
+            f"{len(depths)} depth arrays."
+        )
+
+    if len(depths) < 2:
+        return pd.DataFrame(columns=output_columns)
+
+    flattened_depths = [
+        np.asarray(depth, dtype=np.float64).ravel()
+        for depth in depths
+    ]
+
+    array_sizes = [
+        depth.size
+        for depth in flattened_depths
+    ]
+
+    expected_size = Counter(array_sizes).most_common(1)[0][0]
+
+    complete_timesteps = []
+    complete_depths = []
+
+    for timestep, depth, array_size in zip(
+        timesteps,
+        flattened_depths,
+        array_sizes
+    ):
+        if array_size != expected_size:
+            print(
+                f"Skipping incomplete DEP timestep {timestep}: "
+                f"found {array_size:,} values; "
+                f"expected {expected_size:,}."
+            )
+            continue
+
+        complete_timesteps.append(timestep)
+        complete_depths.append(depth)
+
+    if len(complete_depths) < 2:
+        return pd.DataFrame(columns=output_columns)
+
+    cell_area = float(cell_size) ** 2
+    results = []
+
+    for i in range(1, len(complete_depths)):
+        previous_depth = complete_depths[i - 1]
+        current_depth = complete_depths[i]
+
+        depth_change = current_depth - previous_depth
+
+        cumulative_change = np.nansum(
+            depth_change,
+            dtype=np.float64
+        )
+
+        positive_change = np.maximum(
+            depth_change,
+            0.0
+        )
+
+        max_positive_change_per_cell = np.nanmax(
+            positive_change
+        )
+
+        previous_wet_cells = np.count_nonzero(
+            previous_depth > depth_threshold
+        )
+
+        current_wet_cells = np.count_nonzero(
+            current_depth > depth_threshold
+        )
+
+        inundated_area_change = (
+            current_wet_cells - previous_wet_cells
+        ) * cell_area
+
+        results.append({
+            "timestep": complete_timesteps[i],
+            "cumulative_change": cumulative_change,
+            "max_positive_change_per_cell": (
+                max_positive_change_per_cell
+            ),
+            "inundated_area_change": inundated_area_change
+        })
+
+    return pd.DataFrame(
+        results,
+        columns=output_columns
+    )
+
+def run_gssha_convergence_view(
+    MODEL_DIR,
+    PROJECT_FILE,
+    DEP_FILE,
+    cell_size,
+    depth_threshold=0.01,
+    enable_keyboard_stop=True,
+    dep_check_seconds=300,
+    process_check_seconds=0.5,
+    display_last_n=None
+):
+    """
+    Run GSSHA while periodically reading and analyzing a live DEP file.
+
+    Parameters
+    ----------
+    MODEL_DIR : str or Path
+        GSSHA model directory.
+
+    PROJECT_FILE : str
+        Name of the GSSHA project file.
+
+    DEP_FILE : str
+        Name of the DEP file being written by GSSHA.
+
+    cell_size : float
+        GSSHA grid-cell size. For a 10 m grid, use 10.
+
+    depth_threshold : float, optional
+        Minimum depth used to classify a cell as inundated.
+
+    enable_keyboard_stop : bool, optional
+        When True, opens the separate q control window.
+
+    dep_check_seconds : float, optional
+        Seconds between DEP checks. Default is 300 seconds.
+
+    process_check_seconds : float, optional
+        Seconds between checks of the GSSHA process.
+
+    display_last_n : int or None, optional
+        Number of most recent DataFrame rows to display.
+        None displays the entire DataFrame.
+
+    Returns
+    -------
+    int
+        GSSHA return code.
+    """
+
+    model_dir = os.path.abspath(os.fspath(MODEL_DIR))
+
+    exe_path = os.path.join(model_dir, "gssha.exe")
+    prj_path = os.path.join(model_dir, PROJECT_FILE)
+    dep_path = os.path.join(model_dir, DEP_FILE)
+    log_path = os.path.join(model_dir, "gssha_log.txt")
+
+    if not os.path.isfile(exe_path):
+        raise FileNotFoundError(
+            f"GSSHA executable not found: {exe_path}"
+        )
+
+    if not os.path.isfile(prj_path):
+        raise FileNotFoundError(
+            f"GSSHA project file not found: {prj_path}"
+        )
+
+    print(
+        "Running GSSHA:\n"
+        f"  Executable: {exe_path}\n"
+        f"  Project file: {prj_path}\n"
+        f"  DEP file: {dep_path}\n"
+        f"  DEP check interval: {dep_check_seconds} seconds"
+    )
+
+    safe_stop_sent = False
+    return_code = None
+    process = None
+    q_window_process = None
+
+    latest_dep_dataframe = None
+    dep_check_number = 0
+
+    control_dir = None
+    stop_file = None
+    close_file = None
+
+    if enable_keyboard_stop:
+        control_dir = Path(
+            tempfile.mkdtemp(prefix="gssha_control_")
+        )
+
+        stop_file = control_dir / "stop_requested.txt"
+        close_file = control_dir / "close_window.txt"
+
+    next_dep_check = (
+        time.monotonic() + dep_check_seconds
+    )
+
+    try:
+        with open(
+            log_path,
+            "w",
+            encoding="utf-8",
+            errors="replace",
+            buffering=1
+        ) as log_file:
+
+            log_file.write("---- GSSHA OUTPUT ----\n")
+            log_file.flush()
+
+            process = subprocess.Popen(
+                [exe_path, PROJECT_FILE],
+                cwd=model_dir,
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                creationflags=(
+                    subprocess.CREATE_NEW_PROCESS_GROUP
+                )
+            )
+
+            print(f"GSSHA started. Process ID: {process.pid}")
+
+            if enable_keyboard_stop:
+                q_window_process = start_q_window(
+                    stop_file=stop_file,
+                    close_file=close_file
+                )
+
+                print(
+                    "The GSSHA control window is open. "
+                    "Type q and press Enter there to stop."
+                )
+
+            while process.poll() is None:
+
+                # -------------------------------------
+                # Check for q-window shutdown request
+                # -------------------------------------
+                if (
+                    enable_keyboard_stop
+                    and not safe_stop_sent
+                    and stop_file.exists()
+                ):
+                    print(
+                        "\nSending safe shutdown request to GSSHA..."
+                    )
+
+                    try:
+                        process.send_signal(
+                            signal.CTRL_BREAK_EVENT
+                        )
+
+                        safe_stop_sent = True
+
+                    except ProcessLookupError:
+                        pass
+
+                    except OSError as error:
+                        print(
+                            "Could not send shutdown signal: "
+                            f"{error}"
+                        )
+
+                # -------------------------------------
+                # Periodic live DEP-file calculation
+                # -------------------------------------
+                current_time = time.monotonic()
+
+                if current_time >= next_dep_check:
+                    dep_check_number += 1
+
+                    # The next check is scheduled from the current
+                    # time, preventing rapid catch-up checks.
+                    next_dep_check = (
+                        current_time + dep_check_seconds
+                    )
+
+                    clear_output(wait=True)
+
+                    print(
+                        f"GSSHA is running — DEP check "
+                        f"{dep_check_number}"
+                    )
+
+                    print(f"DEP file: {DEP_FILE}")
+
+                    if enable_keyboard_stop:
+                        print(
+                            "Use the GSSHA control window to stop "
+                            "the simulation."
+                        )
+
+                    try:
+                        if not os.path.isfile(dep_path):
+                            print(
+                                "\nWaiting for the DEP file to be "
+                                "created."
+                            )
+
+                        else:
+                            dep_data = read_GSSHA_dep(
+                                folder_path=model_dir,
+                                filename=DEP_FILE
+                            )
+
+                            dep_dataframe = calculate_dep_changes(
+                                dep_data=dep_data,
+                                cell_size=cell_size,
+                                depth_threshold=depth_threshold
+                            )
+
+                            latest_dep_dataframe = dep_dataframe
+
+                            print(
+                                "\nDEP timestep blocks read: "
+                                f"{len(dep_data['timesteps'])}"
+                            )
+
+                            if dep_dataframe.empty:
+                                print(
+                                    "\nFewer than two complete DEP "
+                                    "timesteps are available."
+                                )
+
+                            elif display_last_n is None:
+                                display(dep_dataframe)
+
+                            else:
+                                display(
+                                    dep_dataframe.tail(
+                                        display_last_n
+                                    )
+                                )
+
+                    except (
+                        PermissionError,
+                        OSError,
+                        ValueError,
+                        IndexError
+                    ) as error:
+                        print(
+                            "\nDEP file could not be processed "
+                            f"during this check:\n{error}"
+                        )
+
+                time.sleep(process_check_seconds)
+
+            # Fully reap GSSHA before proceeding.
+            return_code = process.wait()
+
+    finally:
+        # Tell the q control window to close.
+        if close_file is not None:
+            try:
+                close_file.touch(exist_ok=True)
+            except OSError:
+                pass
+
+        # Wait for the q-window subprocess.
+        if q_window_process is not None:
+            try:
+                q_window_process.wait(timeout=5)
+
+            except subprocess.TimeoutExpired:
+                q_window_process.terminate()
+
+                try:
+                    q_window_process.wait(timeout=2)
+
+                except subprocess.TimeoutExpired:
+                    q_window_process.kill()
+                    q_window_process.wait()
+
+        # Remove temporary control files.
+        if control_dir is not None:
+            for path in (stop_file, close_file):
+                try:
+                    path.unlink(missing_ok=True)
+                except OSError:
+                    pass
+
+            try:
+                control_dir.rmdir()
+            except OSError:
+                pass
+
+    # -------------------------------------
+    # Final DEP calculation after completion
+    # -------------------------------------
+    final_dep_error = None
+
+    if os.path.isfile(dep_path):
+        try:
+            final_dep_data = read_GSSHA_dep(
+                folder_path=model_dir,
+                filename=DEP_FILE
+            )
+
+            latest_dep_dataframe = calculate_dep_changes(
+                dep_data=final_dep_data,
+                cell_size=cell_size,
+                depth_threshold=depth_threshold
+            )
+
+        except (
+            PermissionError,
+            OSError,
+            ValueError,
+            IndexError
+        ) as error:
+            final_dep_error = error
+
+    clear_output(wait=True)
+
+    # -------------------------------------
+    # Final run status
+    # -------------------------------------
+    if safe_stop_sent:
+        print(
+            "GSSHA exited after the shutdown request. "
+            f"Return code: {return_code}"
+        )
+
+    elif return_code == 0:
+        print(
+            "GSSHA simulation completed normally. "
+            "The q window closed automatically."
+        )
+
+    else:
+        print(
+            f"GSSHA exited with return code {return_code}. "
+            "Check gssha_log.txt."
+        )
+
+    if final_dep_error is not None:
+        print(
+            "\nThe final DEP file could not be analyzed:\n"
+            f"{final_dep_error}"
+        )
+
+    elif latest_dep_dataframe is None:
+        print("\nNo DEP DataFrame was generated.")
+
+    elif latest_dep_dataframe.empty:
+        print(
+            "\nThe DEP file does not contain at least two "
+            "complete timesteps."
+        )
+
+    else:
+        print("\nFinal DEP change results:")
+
+        if display_last_n is None:
+            display(latest_dep_dataframe)
+
+        else:
+            display(
+                latest_dep_dataframe.tail(display_last_n)
+            )
+
+    return return_code
 
 def move_and_rename_gssha_output(MODEL_DIR, RESULTS_DIR, output_description = "TEST_RUN", extension = "otl"):
     #otl, ows, dep, etc. extentsions
@@ -426,24 +1086,44 @@ def move_and_rename_gssha_output(MODEL_DIR, RESULTS_DIR, output_description = "T
     print(f"✅ File '{original_file}' saved as '{new_name}' in Results folder.")
 
 
-def copy_text_file(folder_path, original_filename, new_filename):
+
+
+def copy_text_file(
+    folder_path,
+    original_filename,
+    output_folder,
+    new_filename
+):
     """
-    Copies a text file and saves it with a new filename.
+    Copies a text file and saves it with a new filename
+    in the specified output folder.
 
     Parameters
     ----------
-    folder_path : str
-        Path to the folder containing the file.
+    folder_path : str or Path
+        Folder containing the original file.
+
     original_filename : str
         Name of the existing text file.
+
+    output_folder : str or Path
+        Folder where the copied file will be saved.
+        Created automatically if it does not exist.
+
     new_filename : str
         Name of the copied file.
     """
 
     source = Path(folder_path) / original_filename
-    destination = Path(folder_path) / new_filename
+
+    output_folder = Path(output_folder)
+    output_folder.mkdir(parents=True, exist_ok=True)
+
+    destination = output_folder / new_filename
 
     shutil.copy2(source, destination)
+
+    return destination
 
 
 def cleanup_model_dir(MODEL_DIR):
@@ -455,9 +1135,184 @@ def cleanup_model_dir(MODEL_DIR):
 
 
 #GSSHA auto shut down
-def GSSHA_auto_shutdown():
-    gssha_exe = Path.cwd() / "Model" / "gssha.exe"
-    process = subprocess.Popen([gssha_exe, "Test_Waiahole_model.prj"], cwd=Path.cwd() / "Model")
+def GSSHA_auto_shutdown(model_dir):
+    """
+    Launch GSSHA using only the model directory.
+
+    Returns None when the model directory does not contain gssha.exe
+    or a project file.
+
+    Parameters
+    ----------
+    model_dir : str or Path
+        Folder containing gssha.exe and exactly one .prj file.
+
+    Returns
+    -------
+    subprocess.Popen or None
+        Running GSSHA process, or None when GSSHA cannot be launched.
+    """
+
+    model_dir = Path(model_dir)
+
+    if not model_dir.exists():
+        print(f"Model directory does not exist: {model_dir}")
+        return None
+
+    gssha_exe = model_dir / "gssha.exe"
+
+    if not gssha_exe.exists():
+        print(
+            "No gssha.exe found. "
+            "The model folder may already be clean."
+        )
+        return None
+
+    prj_files = list(model_dir.glob("*.prj"))
+
+    if len(prj_files) == 0:
+        print(
+            "No .prj file found. "
+            "There is no GSSHA model to launch."
+        )
+        return None
+
+    if len(prj_files) > 1:
+        raise RuntimeError(
+            "Multiple project files found:\n"
+            + "\n".join(file.name for file in prj_files)
+        )
+
+    project_file = prj_files[0]
+
+    try:
+        process = subprocess.Popen(
+            [str(gssha_exe), project_file.name],
+            cwd=str(model_dir)
+        )
+
+    except OSError as error:
+        print(f"GSSHA could not be launched: {error}")
+        return None
+
+    print(
+        f"GSSHA started with process ID {process.pid}\n"
+        f"Project file: {project_file.name}"
+    )
+
+    return process
+def force_shutdown_gssha(process=None, model_dir=None, timeout=15):
+    """
+    Force-stop GSSHA and its child processes, then wait until gssha.exe
+    is no longer locked.
+
+    Parameters
+    ----------
+    process : subprocess.Popen, optional
+        The process returned when GSSHA was launched.
+
+    model_dir : str or Path, optional
+        Directory containing gssha.exe.
+
+    timeout : float
+        Maximum seconds to wait for process and file-lock release.
+
+    Returns
+    -------
+    bool
+        True when GSSHA is stopped and gssha.exe is unlocked.
+    """
+
+    if process is not None and process.poll() is None:
+        print(
+            f"Force-stopping GSSHA process tree "
+            f"for PID {process.pid}..."
+        )
+
+        result = subprocess.run(
+            [
+                "taskkill",
+                "/PID", str(process.pid),
+                "/T",
+                "/F"
+            ],
+            capture_output=True,
+            text=True,
+            shell=False
+        )
+
+        if result.stdout.strip():
+            print(result.stdout.strip())
+
+        if result.stderr.strip():
+            print(result.stderr.strip())
+
+    # Also terminate any remaining gssha.exe processes.
+    # This catches orphaned runs from a restarted Jupyter kernel.
+    subprocess.run(
+        [
+            "taskkill",
+            "/IM", "gssha.exe",
+            "/T",
+            "/F"
+        ],
+        capture_output=True,
+        text=True,
+        shell=False
+    )
+
+    deadline = time.time() + timeout
+
+    # Wait until Windows no longer reports a running GSSHA process.
+    while time.time() < deadline:
+        check = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq gssha.exe"],
+            capture_output=True,
+            text=True,
+            shell=False
+        )
+
+        if "gssha.exe" not in check.stdout.lower():
+            break
+
+        print("Waiting for the GSSHA process to disappear...")
+        time.sleep(0.5)
+
+    else:
+        print(
+            "GSSHA still appears in Task Manager after "
+            f"{timeout} seconds."
+        )
+        return False
+
+    # Wait for the executable file lock to be released.
+    if model_dir is not None:
+        exe_path = Path(model_dir) / "gssha.exe"
+
+        while time.time() < deadline:
+            try:
+                # Opening for append without writing tests whether another
+                # process still has an incompatible lock on the file.
+                with open(exe_path, "ab"):
+                    pass
+
+                print("GSSHA stopped and gssha.exe is unlocked.")
+                return True
+
+            except PermissionError:
+                print(
+                    "GSSHA has stopped, but Windows has not released "
+                    "gssha.exe yet..."
+                )
+                time.sleep(0.5)
+
+        print(
+            "The GSSHA process stopped, but gssha.exe remains locked."
+        )
+        return False
+
+    print("GSSHA stopped.")
+    return True
 
 
 #the function that chris made to deal with the otl file from wms
