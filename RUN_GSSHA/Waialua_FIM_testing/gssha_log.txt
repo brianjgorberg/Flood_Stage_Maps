@@ -121,4 +121,4 @@ WARNING: you have a long delta t in your precip file (>1 day) [Time:23  5 1907]
 WARNING: you have a long delta t in your precip file (>1 day) [Time:22  7 1907]
 WARNING: you have a long delta t in your precip file (>1 day) [Time:20  9 1907]
 Initialized Arrays
-simulation duration 1000 minutes
+simulation duration 500 minutes
