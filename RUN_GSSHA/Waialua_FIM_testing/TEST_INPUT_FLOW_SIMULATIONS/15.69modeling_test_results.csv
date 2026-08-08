@@ -1,0 +1,4 @@
+gauge_readings_ft,expected_WSE_m,expected_WSE_ft,convergence_time,input_flows,expected_gauge_discharge_cms
+29.0,4.06,13.31,1000,116.67398238866728,139.68
+29.5,4.21,13.81,1000,138.15963645876457,160.7
+30.0,4.36,14.31,1000,163.3839783370698,183.8

@@ -356,34 +356,6 @@ def find_equilibrium_timestep(
 
 
 
-def top_right_curve(flow_values, c0, c1, amplitude, p, q):
-    """
-    Asymmetric top-right curve.
-
-    Constraints used during fitting:
-        0 < p < 1
-        q > 1
-    """
-
-    u = (
-        (np.asarray(flow_values, dtype=float) - flow_min)
-        / (flow_max - flow_min)
-    )
-
-    # Keep values valid at the endpoints
-    u = np.clip(u, 0.0, 1.0)
-
-    baseline = c0 + c1 * u
-    curved_part = amplitude * (u ** p) * ((1.0 - u) ** q)
-
-    return baseline + curved_part
-
-
-def residuals(parameters):
-    return (
-        top_right_curve(flow_fit, *parameters)
-        - time_fit
-    )
 
 
 def get_flow_file_dict(folder_path, extension):
@@ -578,7 +550,10 @@ def rating_curve_equation(Q, a, b):
 def fit_rating_curve(rating_curve_dict):
     """
     Fit all stage-discharge points using ordinary nonlinear
-    least squares. No outlier down-weighting or removal.
+    least squares.
+
+    The curve is anchored at the stage corresponding to the
+    minimum observed discharge.
     """
     sorted_keys = sorted(rating_curve_dict)
 
@@ -598,6 +573,21 @@ def fit_rating_curve(rating_curve_dict):
         dtype=float,
     )
 
+    # Anchor curve at the minimum-discharge observation
+    minimum_index = np.argmin(discharge)
+
+    Q0 = discharge[minimum_index]
+    h0 = stage[minimum_index]
+
+    def equation_for_fitting(Q, a, b):
+        return rating_curve_equation(
+            Q,
+            a,
+            b,
+            Q0,
+            h0,
+        )
+
     parameters, covariance = curve_fit(
         rating_curve_equation,
         discharge,
@@ -609,29 +599,39 @@ def fit_rating_curve(rating_curve_dict):
         ),
         maxfev=100000,
     )
-
+    
     a, b = parameters
+        
+
 
     stage_fit = rating_curve_equation(
         discharge,
         a,
         b,
     )
-
     residuals = stage - stage_fit
 
     ss_res = np.sum(residuals**2)
-    ss_tot = np.sum((stage - stage.mean())**2)
+    ss_tot = np.sum(
+        (stage - stage.mean())**2
+    )
 
     r_squared = 1 - ss_res / ss_tot
-    rmse = np.sqrt(np.mean(residuals**2))
+    rmse = np.sqrt(
+        np.mean(residuals**2)
+    )
 
     return {
         "parameters": {
             "a": float(a),
             "b": float(b),
+            "Q0": float(Q0),
+            "h0": float(h0),
         },
-        "equation": f"h = {a:.6f} * Q^{b:.6f}",
+        "equation": (
+            f"h = {h0:.6f} + "
+            f"{a:.6f} * max(Q - {Q0:.6f}, 0)^{b:.6f}"
+        ),
         "r_squared": float(r_squared),
         "rmse": float(rmse),
         "covariance": covariance,
@@ -640,7 +640,6 @@ def fit_rating_curve(rating_curve_dict):
         "stage_fit": stage_fit,
         "residuals": residuals,
     }
-
 
 
 def shifted_rating_curve(Q, a, b, delta_Q, delta_h):
@@ -842,5 +841,155 @@ def get_flow_file_dict(folder_path, extension):
 
     return dict(sorted(file_dict.items()))
 
+import numpy as np
+from scipy.optimize import least_squares
+
+
+def power_log_fit(x, a, b, c):
+    """
+    Power + logarithmic curve.
+
+    Equation
+    --------
+    y = a * x**b + c * ln(1 + x)
+    """
+    x = np.asarray(x, dtype=float)
+
+    return (
+        a * x**b
+        + c * np.log1p(x)
+    )
+
+# Define the drop-in replacement and run it on the file we just inspected.
+def read_ascii_header_and_rows_cols(ascii_reference_path: str, *, nodata_value: float = -9999, tol: float = 1e-6):
+    """
+    Reads a GSSHA-style header (north/south/east/west/rows/cols) and returns:
+      - asc_header: ESRI ASCII header lines
+      - rows: int
+      - cols: int
+      - cellsize: float
+    """
+    vals = {}
+    with open(ascii_reference_path, "r", errors="ignore") as f:
+        for _ in range(6):
+            line = f.readline()
+            if not line:
+                break
+            if ":" in line:
+                k, v = line.split(":", 1)
+                key = k.strip().lower()
+                val = v.strip()
+                if key in ("rows", "cols"):
+                    vals[key] = int(float(val))
+                else:
+                    vals[key] = float(val)
+
+    required = {"north", "south", "east", "west", "rows", "cols"}
+    if not required.issubset(vals):
+        missing = required - set(vals)
+        raise ValueError(f"GSSHA header missing keys: {', '.join(sorted(missing))}")
+
+    north, south = vals["north"], vals["south"]
+    east,  west  = vals["east"],  vals["west"]
+    rows,  cols  = vals["rows"],  vals["cols"]
+
+    # Compute cellsize and ensure square cells
+    cellsize_x = (east  - west ) / cols
+    cellsize_y = (north - south) / rows
+    if abs(cellsize_x - cellsize_y) > tol:
+        raise ValueError(f"Non-square cells detected: cellsize_x={cellsize_x} vs cellsize_y={cellsize_y}")
+    cellsize = cellsize_x
+
+    # Build ESRI ASCII header
+    asc_header = [
+        f"NCOLS {cols}",
+        f"NROWS {rows}",
+        f"XLLCORNER {west}",
+        f"YLLCORNER {south}",
+        f"CELLSIZE {cellsize}",
+        f"NODATA_VALUE {nodata_value}"
+    ]
+
+    return asc_header, rows, cols
+
+
+
+
+def _parse_gfl_values_strict(gfl_path: str) -> np.ndarray:
+    """
+    Parses numeric values from a GSSHA gfl file strictly:
+    - Finds the line beginning with 'TS '
+    - Reads subsequent lines until an END marker (ENDSCL/ENDDS/END) or EOF
+    - Returns all numeric tokens (floats) in order
+    """
+    with open(gfl_path, "r", errors="ignore") as f:
+        lines = f.read().splitlines()
+    # find TS line index
+    ts_idx = None
+    for i, ln in enumerate(lines):
+        if ln.strip().upper().startswith("TS "):
+            ts_idx = i
+            break
+    if ts_idx is None:
+        raise ValueError("TS line not found in GFL file.")
+
+    nums = []
+    num_re = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?$')
+    for ln in lines[ts_idx + 1:]:
+        u = ln.strip().upper()
+        if u in ("ENDSCL", "ENDDS", "END"):
+            break
+        # collect numeric tokens from the line
+        for tok in ln.split():
+            if num_re.fullmatch(tok):
+                nums.append(float(tok))
+    return np.array(nums, dtype=float)
+
+
+def convert_gfl_ASCII(gfl_path: str, ascii_header_path: str, out_ascii_path: str) -> str:
+    """
+    Convert a GSSHA .gfl to an ASCII grid file that exactly matches the
+    header format (including ordering and line endings) of a provided ASCII file.
+
+    Args:
+        gfl_path (str): Path to source .gfl file.
+        ascii_header_path (str): Path to an existing ASCII grid file whose
+                                 first 6 header lines (north/south/east/west/rows/cols)
+                                 will be copied verbatim, and from which rows/cols are read.
+        out_ascii_path (str): Path where the converted ASCII grid will be written.
+
+    Returns:
+        str: The path to the written ASCII grid file.
+    """
+    # 1) Read header & dimensions from the reference ASCII
+    header_lines, rows, cols = read_ascii_header_and_rows_cols(ascii_header_path)
+    n = rows * cols
+
+    # 2) Parse numeric values from the GFL
+    values = _parse_gfl_values_strict(gfl_path)
+
+    # Many GFL files contain multiple blocks of n values after TS.
+    # Based on inspection, the second block matched the target ASCII file.
+    if values.size < 2 * n:
+        raise ValueError(
+            f"GFL has {values.size} numeric values; need at least {2*n} values "
+            f"to extract the second block of size rows*cols."
+        )
+
+    grid_vals = values[n:2 * n].reshape((rows, cols))
+
+    # 3) Write output:
+    #    - copy the first 6 header lines verbatim from ascii_header_path
+    #    - data lines with '%.6f' values separated by a single space
+    #    - trailing space at end of each data line
+    #    - CRLF ('\\r\\n') line endings to match the reference
+    with open(out_ascii_path, "wb") as f:
+        for i in range(6):
+            f.write((header_lines[i] + "\r\n").encode("utf-8"))
+        for r in range(rows):
+            line = " ".join(f"{v:.6f}" for v in grid_vals[r]) + " "
+            f.write((line + "\r\n").encode("utf-8"))
+
+    return out_ascii_path
 
 # In[ ]:
