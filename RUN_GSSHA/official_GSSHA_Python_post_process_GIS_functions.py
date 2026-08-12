@@ -95,33 +95,35 @@ def read_GSSHA_oqc(filepath):
     )
 
     return df
-def get_flow_file_dict(folder_path, extension, cfs_to_cms=0.0283168466):
-    """
-    Returns a dictionary mapping rounded flow (cms) to file paths.
+# def get_flow_file_dict(folder_path, extension, cfs_to_cms=0.0283168466):
+#     """
+#     Returns a dictionary mapping rounded flow (cms) to file paths.
 
-    Parameters
-    ----------
-    folder_path : str or Path
-        Folder containing the files.
-    extension : str
-        File extension (e.g., ".dep", ".xys", ".otl").
-    cfs_to_cms : float, optional
-        Conversion factor from cfs to cms.
+#     Parameters
+#     ----------
+#     folder_path : str or Path
+#         Folder containing the files.
+#     extension : str
+#         File extension (e.g., ".dep", ".xys", ".otl").
+#     cfs_to_cms : float, optional
+#         Conversion factor from cfs to cms.
 
-    Returns
-    -------
-    dict
-        Keys are rounded flow values (cms, int).
-        Values are pathlib.Path objects.
-    """
-    folder_path = Path(folder_path)
+#     Returns
+#     -------
+#     dict
+#         Keys are rounded flow values (cms, int).
+#         Values are pathlib.Path objects.
+#     """
+#     folder_path = Path(folder_path)
 
-    files = {
-        round(int(file_path.stem.split("-")[-1]) * cfs_to_cms): file_path
-        for file_path in folder_path.glob(f"*{extension}")
-    }
+#     files = {
+#         round(int(file_path.stem.split("-")[-1]) * cfs_to_cms): file_path
+#         for file_path in folder_path.glob(f"*{extension}")
+#     }
 
-    return dict(sorted(files.items()))
+#     return dict(sorted(files.items())) 
+
+#NEED EDITS^
 
 
 def hybrid_fit(q_inflow, a, b, c):
