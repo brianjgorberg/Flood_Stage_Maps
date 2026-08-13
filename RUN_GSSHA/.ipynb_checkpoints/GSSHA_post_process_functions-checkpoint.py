@@ -26,7 +26,8 @@ from matplotlib.dates import DateFormatter
 from dateutil.tz import tzutc, tzlocal
 from scipy import stats
 from scipy.optimize import brentq, curve_fit, fsolve, least_squares
-
+from scipy.interpolate import PchipInterpolator
+from scipy.interpolate import UnivariateSpline
 
 
 import sys
@@ -77,22 +78,49 @@ def cumulative_to_instantaneous(
 
 def read_GSSHA_oqc(filepath):
     """
-    Read a GSSHA .oqc file.
+    Read a GSSHA .oqc file and convert cumulative discharge
+    to instantaneous discharge.
 
     Returns
     -------
     pandas.DataFrame
         Columns:
         - timestep_min
-        - discharge
         - cumulative_discharge
+        - instantaneous_discharge
     """
+
     df = pd.read_csv(
         filepath,
         sep=r"\s+",
         header=None,
-        names=["timestep_min", "cumulative_discharge"],
+        names=[
+            "timestep_min",
+            "cumulative_discharge",
+        ],
     )
+
+
+    # -----------------------------------------
+    # CONVERT CUMULATIVE TO INSTANTANEOUS
+    # -----------------------------------------
+
+    timestep_seconds = (
+        df["timestep_min"]
+        .diff()
+        * 60
+    )
+
+    cumulative_change = (
+        df["cumulative_discharge"]
+        .diff()
+    )
+
+    df["instantaneous_discharge"] = (
+        cumulative_change
+        / timestep_seconds
+    )
+
 
     return df
 def get_flow_file_dict(folder_path, extension, cfs_to_cms=0.0283168466):
@@ -1147,57 +1175,125 @@ def get_input_flows_for_gauge_stages(
 
     return result
 
-def view_timestep_convergence(model_results_directory, area_change_threshold = 1000, number_timesteps_below_threshold = 6):
+
+
+
+def view_timestep_convergence(
+    model_results_directory,
+    area_change_threshold=1000,
+    number_timesteps_below_threshold=6,
+    smoothing=0.05,
+):
+
     dep_file_paths = get_flow_file_dict(
         model_results_directory,
         ".dep"
     )
-    dep_file_read ={}
+
+    dep_file_read = {}
+
     for flow_cms, filepath in dep_file_paths.items():
-        dep = read_GSSHA_dep(filepath.parent, filepath.name)
-        
+
+        dep = read_GSSHA_dep(
+            filepath.parent,
+            filepath.name
+        )
+
         dep_file_read[flow_cms] = dep
-    
+
+
     dep_changes = {}
+
     for flow_cms, dep_data in dep_file_read.items():
+
         dep_changes[flow_cms] = calculate_dep_changes(
             dep_data,
             cell_size=10,
             depth_threshold=0.01
         )
-    
+
+
     equilibrium_timesteps = {
         flow_cms: find_equilibrium_timestep(
-        df,
-        column="inundated_area_change",
-        threshold=area_change_threshold,
-        consecutive_steps=number_timesteps_below_threshold,)
+            df,
+            column="inundated_area_change",
+            threshold=area_change_threshold,
+            consecutive_steps=number_timesteps_below_threshold,
+        )
         for flow_cms, df in dep_changes.items()
     }
-    
-    
+
+
     # Convert equilibrium_timesteps dictionary to arrays
     flow = np.array(
         sorted(equilibrium_timesteps.keys()),
         dtype=float,
     )
-    
+
     time = np.array(
-        [equilibrium_timesteps[f] for f in flow],
+        [
+            equilibrium_timesteps[f]
+            for f in flow
+        ],
         dtype=float,
     )
-    
-    
+
+
     # Remove missing values
-    valid = np.isfinite(flow) & np.isfinite(time)
-    
-    flow_fit = flow[valid]
-    time_fit = time[valid]
-    
-    
-    
-    plt.figure(figsize=(9, 4))
-    
+    valid = (
+        np.isfinite(flow)
+        & np.isfinite(time)
+    )
+
+    flow_fit = flow[
+        valid
+    ]
+
+    time_fit = time[
+        valid
+    ]
+
+
+    # -----------------------------------------
+    # SMOOTHING SPLINE
+    # -----------------------------------------
+
+    # Convert smoothing from a relative 0-1 style
+    # parameter into the scale expected by
+    # UnivariateSpline
+    spline_s = (
+        smoothing
+        * len(time_fit)
+        * np.var(time_fit)
+    )
+
+    spline_function = UnivariateSpline(
+        flow_fit,
+        time_fit,
+        k=2,
+        s=spline_s,
+    )
+
+
+    flow_plot = np.linspace(
+        flow_fit.min(),
+        flow_fit.max(),
+        2000,
+    )
+
+    time_plot = spline_function(
+        flow_plot
+    )
+
+
+    # -----------------------------------------
+    # PLOT
+    # -----------------------------------------
+
+    plt.figure(
+        figsize=(9, 4)
+    )
+
     plt.scatter(
         flow_fit,
         time_fit,
@@ -1205,15 +1301,50 @@ def view_timestep_convergence(model_results_directory, area_change_threshold = 1
         zorder=3,
         label="Model runs",
     )
-    
 
-    plt.xlabel("Flow (cms)")
-    plt.ylabel("Equilibrium timestep (min)")
-    plt.title("Predicted Equilibrium Timestep by Inflow")
-    plt.grid(alpha=0.3)
+    plt.plot(
+        flow_plot,
+        time_plot,
+        linewidth=2.5,
+        label=f"Smoothing spline (s={smoothing})",
+    )
+
+    plt.xlabel(
+        "Flow (cms)"
+    )
+
+    plt.ylabel(
+        "Equilibrium timestep (min)"
+    )
+
+    plt.title(
+        "Predicted Equilibrium Timestep by Inflow"
+    )
+
+    plt.grid(
+        alpha=0.3
+    )
+
     plt.legend()
     plt.tight_layout()
     plt.show()
+
+
+    # -----------------------------------------
+    # RETURN SPLINE VARIABLES
+    # -----------------------------------------
+
+    spline_variables = {
+        "function": spline_function,
+        "smoothing": smoothing,
+        "spline_s": spline_s,
+        "min_flow": flow_fit.min(),
+        "max_flow": flow_fit.max(),
+        "flow": flow_fit,
+        "time": time_fit,
+    }
+
+    return spline_variables
 
 
 def predict_timestep_convergence(
@@ -1439,4 +1570,645 @@ def calculate_dep_changes(
         results,
         columns=output_columns
     )
+
+def plot_power_log_function(
+    peak_wse,
+    plot=True,
+):
+
+    # -----------------------------------------
+    # POWER + LOG FUNCTION
+    # -----------------------------------------
+
+    def power_log_fit(
+        q,
+        a,
+        b,
+        c,
+    ):
+
+        q = np.asarray(
+            q,
+            dtype=float,
+        )
+
+        return (
+            a * q**b
+            + c * np.log1p(q)
+        )
+
+
+    # -----------------------------------------
+    # DATA
+    # -----------------------------------------
+
+    inflow = np.array(
+        sorted(peak_wse.keys()),
+        dtype=float,
+    )
+
+    wse = np.array(
+        [
+            peak_wse[q]
+            for q in inflow
+        ],
+        dtype=float,
+    )
+
+
+    # -----------------------------------------
+    # FIT CURVE
+    # -----------------------------------------
+
+    params, covariance = curve_fit(
+        power_log_fit,
+        inflow,
+        wse,
+        p0=(2.0, 0.5, 0.2),
+        bounds=(
+            [0.0, 0.01, 0.0],
+            [np.inf, 0.99, np.inf],
+        ),
+        maxfev=50000,
+    )
+
+    a, b, c = params
+
+
+    # -----------------------------------------
+    # OPTIONAL PLOT
+    # -----------------------------------------
+
+    if plot:
+
+        q_plot = np.linspace(
+            0,
+            inflow.max() * 1.25,
+            1000,
+        )
+
+
+        plt.figure(
+            figsize=(10, 6)
+        )
+
+
+        plt.scatter(
+            inflow,
+            wse,
+            s=60,
+            label="GSSHA results",
+        )
+
+
+        plt.plot(
+            q_plot,
+            power_log_fit(
+                q_plot,
+                a,
+                b,
+                c,
+            ),
+            linewidth=2.5,
+            label="Power + logarithmic fit",
+        )
+
+
+        # Label points with peak_wse keys
+        for x, y in zip(
+            inflow,
+            wse,
+        ):
+
+            plt.annotate(
+                f"{x:.0f}",
+                (x, y),
+                xytext=(0, 3),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                fontweight="bold",
+                color="black",
+            )
+
+
+        plt.xlabel(
+            "Input flow"
+        )
+
+        plt.ylabel(
+            "WSE (m)"
+        )
+
+        plt.grid(
+            alpha=0.3
+        )
+
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+def low_flow_interpolation(
+    peak_wse_no_outlier,
+    smoothing=0.05,
+    plot=True,
+):
+
+    # -----------------------------------------
+    # DATA
+    # -----------------------------------------
+
+    inflow = np.array(
+        sorted(peak_wse_no_outlier.keys()),
+        dtype=float,
+    )
+
+    wse = np.array(
+        [
+            peak_wse_no_outlier[q]
+            for q in inflow
+        ],
+        dtype=float,
+    )
+
+
+    # -----------------------------------------
+    # FIT SMOOTHING SPLINE
+    # -----------------------------------------
+
+    interpolation_function = UnivariateSpline(
+        inflow,
+        wse,
+        s=smoothing,
+    )
+
+
+    # -----------------------------------------
+    # OPTIONAL PLOT
+    # -----------------------------------------
+
+    if plot:
+
+        q_plot = np.linspace(
+            inflow.min(),
+            inflow.max(),
+            2000,
+        )
+
+        wse_plot = interpolation_function(
+            q_plot
+        )
+
+
+        plt.figure(
+            figsize=(10, 6)
+        )
+
+        plt.scatter(
+            inflow,
+            wse,
+            s=60,
+            label="GSSHA results",
+        )
+
+        plt.plot(
+            q_plot,
+            wse_plot,
+            linewidth=2.5,
+            label=f"Smoothing spline (s={smoothing})",
+        )
+
+
+        for x, y in zip(
+            inflow,
+            wse,
+        ):
+
+            plt.annotate(
+                f"{x:.0f} cfs",
+                (x, y),
+                xytext=(0, 4),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                fontweight="bold",
+                color="black",
+            )
+
+
+        plt.xlabel(
+            "Upstream inflow (cfs)"
+        )
+
+        plt.ylabel(
+            "WSE (m)"
+        )
+
+        plt.grid(
+            alpha=0.3
+        )
+
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+
+    # -----------------------------------------
+    # RETURN FUNCTION + VARIABLES
+    # -----------------------------------------
+
+    interpolation_variables = {
+        "function": interpolation_function,
+        "smoothing": smoothing,
+        "min_flow": inflow.min(),
+        "max_flow": inflow.max(),
+    }
+
+
+    return interpolation_variables
+
+def high_flow_linear(
+    peak_wse_no_outlier,
+    above_value,
+    plot=True,
+):
+
+    # -----------------------------------------
+    # ALL DATA
+    # -----------------------------------------
+
+    inflow = np.array(
+        sorted(peak_wse_no_outlier.keys()),
+        dtype=float,
+    )
+
+    wse = np.array(
+        [
+            peak_wse_no_outlier[q]
+            for q in inflow
+        ],
+        dtype=float,
+    )
+
+
+    # -----------------------------------------
+    # DATA USED FOR LINEAR FIT
+    # -----------------------------------------
+
+    mask = inflow > above_value
+
+    inflow_linear = inflow[
+        mask
+    ]
+
+    wse_linear = wse[
+        mask
+    ]
+
+
+    # -----------------------------------------
+    # LINEAR FIT
+    # -----------------------------------------
+
+    slope, intercept = np.polyfit(
+        inflow_linear,
+        wse_linear,
+        1,
+    )
+
+
+    def linear_function(flow):
+
+        return (
+            slope
+            * np.asarray(
+                flow,
+                dtype=float,
+            )
+            + intercept
+        )
+
+
+    # -----------------------------------------
+    # R²
+    # -----------------------------------------
+
+    predicted = linear_function(
+        inflow_linear
+    )
+
+    ss_res = np.sum(
+        (
+            wse_linear
+            - predicted
+        )**2
+    )
+
+    ss_tot = np.sum(
+        (
+            wse_linear
+            - wse_linear.mean()
+        )**2
+    )
+
+    r_squared = (
+        1
+        - ss_res / ss_tot
+    )
+
+
+    # -----------------------------------------
+    # OPTIONAL PLOT
+    # -----------------------------------------
+
+    if plot:
+
+        q_plot = np.linspace(
+            inflow_linear.min(),
+            inflow_linear.max(),
+            2000,
+        )
+
+        wse_plot = linear_function(
+            q_plot
+        )
+
+
+        plt.figure(
+            figsize=(10, 6)
+        )
+
+
+        # Plot ALL points
+        plt.scatter(
+            inflow,
+            wse,
+            s=60,
+            label="GSSHA results",
+        )
+
+
+        # Linear line only over fitted range
+        plt.plot(
+            q_plot,
+            wse_plot,
+            linewidth=2.5,
+            label=(
+                f"Linear fit > {above_value} cfs "
+                f"(R² = {r_squared:.4f})"
+            ),
+        )
+
+
+        # Label ALL points
+        for x, y in zip(
+            inflow,
+            wse,
+        ):
+
+            plt.annotate(
+                f"{x:.0f} cfs",
+                (x, y),
+                xytext=(0, 4),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                fontweight="bold",
+                color="black",
+            )
+
+
+        plt.xlabel(
+            "Upstream inflow (cfs)"
+        )
+
+        plt.ylabel(
+            "WSE (m)"
+        )
+
+        plt.grid(
+            alpha=0.3
+        )
+
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+
+    # -----------------------------------------
+    # RETURN VARIABLES
+    # -----------------------------------------
+
+    linear_variables = {
+        "function": linear_function,
+        "slope": slope,
+        "intercept": intercept,
+        "r_squared": r_squared,
+        "above_value": above_value,
+        "min_fit_flow": inflow_linear.min(),
+        "max_fit_flow": inflow_linear.max(),
+    }
+
+
+    return linear_variables
+def read_test_and_first_calibration_results (modeling_results_directory):
+    # Allow either one directory or a list of directories
+    if not isinstance(
+        modeling_results_directory,
+        (list, tuple),
+    ):
+        modeling_results_directory = [
+            modeling_results_directory
+        ]
+    
+    
+    peak_wse = {}
+    
+    
+    for results_directory in modeling_results_directory:
+    
+        # Get .ows files from this directory
+        ows_file_paths = get_flow_file_dict(
+            results_directory,
+            ".ows",
+        )
+        
+    
+    
+        # Read each .ows file
+        for flow_cms, filepath in ows_file_paths.items():
+    
+            ows = read_GSSHA_ows(
+                filepath.parent,
+                filepath.name,
+            )
+    
+    
+            # Add directly to combined peak_wse dictionary
+            peak_wse[flow_cms] = (
+                ows["WSE_m"]
+                .tail(120)
+                .mean()
+            )
+    return peak_wse
+
+
+def get_input_flow_interpolation_linear(
+    expected_WSE_m,
+    interpolation_variables,
+    linear_variables,
+    flow_threshold=1000,
+):
+
+    interpolation_function = (
+        interpolation_variables["function"]
+    )
+
+    linear_function = (
+        linear_variables["function"]
+    )
+
+    slope = linear_variables["slope"]
+    intercept = linear_variables["intercept"]
+
+
+    input_flows = []
+
+
+    for target_wse in expected_WSE_m:
+
+        # -----------------------------------------
+        # FIRST TRY INTERPOLATION
+        # ONLY VALID FOR FLOW < 1000
+        # -----------------------------------------
+
+        interpolation_min_flow = (
+            interpolation_variables["min_flow"]
+        )
+
+        interpolation_max_flow = min(
+            interpolation_variables["max_flow"],
+            flow_threshold,
+        )
+
+
+        def interpolation_equation(flow):
+
+            return (
+                interpolation_function(flow)
+                - target_wse
+            )
+
+
+        interpolation_flow = None
+
+
+        try:
+
+            interpolation_flow = brentq(
+                interpolation_equation,
+                interpolation_min_flow,
+                interpolation_max_flow,
+            )
+
+        except ValueError:
+
+            interpolation_flow = None
+
+
+        # If interpolation gives a valid flow < 1000,
+        # use interpolation
+        if (
+            interpolation_flow is not None
+            and interpolation_flow < flow_threshold
+        ):
+
+            input_flows.append(
+                interpolation_flow
+            )
+
+            continue
+
+
+        # -----------------------------------------
+        # OTHERWISE USE LINEAR
+        # ONLY VALID FOR FLOW >= 1000
+        # -----------------------------------------
+
+        linear_flow = (
+            (target_wse - intercept)
+            / slope
+        )
+
+
+        if linear_flow >= flow_threshold:
+
+            input_flows.append(
+                linear_flow
+            )
+
+        else:
+
+            input_flows.append(
+                np.nan
+            )
+
+    return input_flows
+
+def calculate_convergence_time(additional_buffer, timestep_function, listed_input_flows):
+    pchip_function = timestep_function["function"]
+    
+    
+    min_flow = timestep_function["min_flow"]
+    max_flow = timestep_function["max_flow"]
+    
+    min_flow_timestep = float(
+        pchip_function(min_flow)
+    )
+    
+    max_flow_timestep = float(
+        pchip_function(max_flow)
+    )
+    
+    
+    convergence_time = []
+    
+    for input_flow in listed_input_flows:
+    
+        # Flow is below the minimum flow used by the PCHIP
+        if input_flow < min_flow:
+    
+            timestep = (
+                min_flow_timestep
+                + 200
+            )
+    
+        # Flow is above the maximum flow used by the PCHIP
+        elif input_flow > max_flow:
+    
+            timestep = max_flow_timestep
+    
+        # Flow is within the PCHIP range
+        else:
+    
+            timestep = float(
+                pchip_function(input_flow)
+            )
+    
+        # Add 30 minutes to ALL convergence timesteps
+        # Add 30 minutes to ALL convergence timesteps
+        # and round to nearest minute
+        timestep = round(
+            timestep + additional_buffer
+        )
+        
+        convergence_time.append(
+            timestep
+        )
+    
+    return convergence_time
+
+
 # In[ ]:
