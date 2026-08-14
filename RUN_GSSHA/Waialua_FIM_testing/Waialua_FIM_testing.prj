@@ -10,7 +10,7 @@ METRIC
 GRIDSIZE                  10.000000
 ROWS                      321
 COLS                      239
-TOT_TIME                  783
+TOT_TIME                  315
 TIMESTEP                  30
 OUTROW                    1
 OUTCOL                    85

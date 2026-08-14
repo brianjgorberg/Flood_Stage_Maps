@@ -123,33 +123,6 @@ def read_GSSHA_oqc(filepath):
 
 
     return df
-def get_flow_file_dict(folder_path, extension, cfs_to_cms=0.0283168466):
-    """
-    Returns a dictionary mapping rounded flow (cms) to file paths.
-
-    Parameters
-    ----------
-    folder_path : str or Path
-        Folder containing the files.
-    extension : str
-        File extension (e.g., ".dep", ".xys", ".otl").
-    cfs_to_cms : float, optional
-        Conversion factor from cfs to cms.
-
-    Returns
-    -------
-    dict
-        Keys are rounded flow values (cms, int).
-        Values are pathlib.Path objects.
-    """
-    folder_path = Path(folder_path)
-
-    files = {
-        round(int(file_path.stem.split("-")[-1]) * cfs_to_cms): file_path
-        for file_path in folder_path.glob(f"*{extension}")
-    }
-
-    return dict(sorted(files.items()))
 
 
 def hybrid_fit(q_inflow, a, b, c):
@@ -385,48 +358,6 @@ def find_equilibrium_timestep(
 
 
 
-
-def get_flow_file_dict(folder_path, extension):
-    """
-    Returns a dictionary mapping flow values (parsed from filenames)
-    to the corresponding file paths.
-
-    Parameters
-    ----------
-    folder_path : str or Path
-        Folder containing the files.
-
-    extension : str
-        File extension to search for (e.g. ".ows", ".oqc", ".xys").
-
-    Returns
-    -------
-    dict
-        Keys are flow values (float if needed, otherwise int).
-        Values are Path objects.
-    """
-
-    folder_path = Path(folder_path)
-
-    file_dict = {}
-
-    for file in folder_path.glob(f"*{extension}"):
-    
-        print(file.name)
-    
-        match = re.search(r"-flow-cfs-([-+]?\d*\.?\d+)", file.stem)
-    
-        print(match)
-    
-        if match:
-            flow = float(match.group(1))
-    
-            if flow.is_integer():
-                flow = int(flow)
-    
-            file_dict[flow] = file
-    return dict(sorted(file_dict.items()))
-
 def rating_curve_equation(Q, a, b):
     """
     Rating curve forced through (0, 0):
@@ -528,11 +459,6 @@ def get_flow_file_dict(folder_path, extension):
     """
     Returns a dictionary mapping flow values from the corresponding
     TSF files to the requested file paths.
-
-    The TSF file has the same filename as the requested file,
-    except its extension is ".tsf".
-
-    The flow value is read from the second column of the TSF file.
     """
 
     folder_path = Path(folder_path)
@@ -541,10 +467,16 @@ def get_flow_file_dict(folder_path, extension):
 
     for file in folder_path.glob(f"*{extension}"):
 
-        print(file.name)
+        # Everything before _OUTPUT
+        prefix = file.name.split("_OUTPUT")[0]
 
-        # Same filename, but with .tsf extension
-        tsf_file = file.with_suffix(".tsf")
+        # Get final value in filename
+        flow_id = file.stem.rsplit("-", 1)[-1]
+
+        # Construct matching TSF filename
+        tsf_file = folder_path / (
+            f"{prefix}_OUTPUT-input-flow-cms-{flow_id}.tsf"
+        )
 
         if not tsf_file.exists():
             print(f"TSF file not found: {tsf_file.name}")
@@ -552,8 +484,7 @@ def get_flow_file_dict(folder_path, extension):
 
         # Read first data line after TSF header
         with open(tsf_file, "r") as f:
-            f.readline()  # skip header
-
+            f.readline()
             first_data_line = f.readline().split()
 
         # Flow is the right column
@@ -562,12 +493,10 @@ def get_flow_file_dict(folder_path, extension):
         if flow.is_integer():
             flow = int(flow)
 
-        print("Flow from TSF:", flow)
-
         file_dict[flow] = file
 
     return dict(sorted(file_dict.items()))
-
+    
 def rating_curve_equation(Q, a, b):
     """
     Rating curve forced through (0, 0):
@@ -849,31 +778,6 @@ def invert_hybrid_safe(y_target, a, b, c):
 
     return brentq(residual, lo, hi)
 
-def get_flow_file_dict(folder_path, extension):
-    """
-    Returns a dictionary where:
-        key   = flow in cms (rounded to nearest whole number)
-        value = Path to the file
-    """
-
-    folder_path = Path(folder_path)
-
-    file_dict = {}
-
-    for file in folder_path.glob(f"*{extension}"):
-
-        # Extract flow from filename (stored in cfs)
-        flow_cfs = float(file.stem.split("-")[-1])
-
-        # Convert to cms and round to nearest whole number
-        flow_cms = round(flow_cfs * 0.028316846592)
-
-        file_dict[flow_cms] = file
-
-    return dict(sorted(file_dict.items()))
-
-import numpy as np
-from scipy.optimize import least_squares
 
 
 def power_log_fit(x, a, b, c):
@@ -2210,5 +2114,83 @@ def calculate_convergence_time(additional_buffer, timestep_function, listed_inpu
     
     return convergence_time
 
+def read_WSE_and_discharge_from_model_results(
+    model_results_folder_directory,
+    Gauge_Datum_offset,
+):
+    # Read model gauge discharge output
+    oqc_file_paths = get_flow_file_dict(
+        model_results_folder_directory,
+        ".oqc"
+    )
+    
+    peak_discharge = {}
+    
+    for flow_cms, filepath in oqc_file_paths.items():
+        gauge_discharge = read_GSSHA_oqc(filepath)
+        
+        max_discharge = np.ceil(
+            gauge_discharge["instantaneous_discharge"].max()
+        )
+        
+        peak_discharge[flow_cms] = max_discharge
+    
+    
+    # Read model WSE output
+    ows_file_paths = get_flow_file_dict(
+        model_results_folder_directory,
+        ".ows"
+    )
+    
+    ows_file_read = {}
+    
+    for flow_cms, filepath in ows_file_paths.items():
+        ows = read_GSSHA_ows(
+            filepath.parent,
+            filepath.name
+        )
+        
+        ows_file_read[flow_cms] = ows
+    
+    
+    peak_wse = {}
+    
+    for flow_cms, df in ows_file_read.items():
+        peak_wse[flow_cms] = (
+            df["WSE_m"]
+            .tail(120)
+            .mean()
+        )
+
+
+    # Get corresponding GFL filenames
+    gfl_file_paths = get_flow_file_dict(
+        model_results_folder_directory,
+        ".gfl"
+    )
+    
+    gfl_filenames = {
+        flow_cms: filepath.name
+        for flow_cms, filepath in gfl_file_paths.items()
+    }
+    
+    
+    # Combine results
+    df_model_results = pd.DataFrame({
+        "WSE_m": pd.Series(peak_wse),
+        "gauge_discharge_cms": pd.Series(peak_discharge),
+        "gfl_filename": pd.Series(gfl_filenames),
+    })
+    
+    df_model_results.index.name = "input_flow_cms"
+    
+    
+    # Convert WSE to feet and apply gauge datum offset
+    df_model_results["modeled_gauge_reading"] = (
+        df_model_results["WSE_m"] * 3.28084
+        + Gauge_Datum_offset
+    )
+
+    return df_model_results
 
 # In[ ]:

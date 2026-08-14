@@ -1,31 +1,31 @@
 ---- STDOUT ----
 Parallel version of GSSHA (8.0.024 Release, Jul  3 2025) with SCE (OpenMP), 64 bit, 32 total threads.
 reading run parameters from project file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.prj
-Check time series file:1899 12 30 0 2451
-Check time series file:1899 12 30 1 2451
-Check time series file:1899 12 30 2 2451
-Check time series file:1899 12 30 3 2451
-Check time series file:1899 12 30 4 2451
-Check time series file:1899 12 30 5 2451
-Check time series file:1899 12 30 6 2451
-Check time series file:1899 12 30 7 2451
-Check time series file:1899 12 30 8 2451
-Check time series file:1899 12 30 9 2451
-Check time series file:1899 12 30 10 2451
-Check time series file:1899 12 30 11 2451
-Check time series file:1899 12 30 12 2451
-Check time series file:1899 12 30 13 2451
-Check time series file:1899 12 30 14 2451
-Check time series file:1899 12 30 15 2451
-Check time series file:1899 12 30 16 2451
-Check time series file:1899 12 30 17 2451
-Check time series file:1899 12 30 18 2451
-Check time series file:1899 12 30 19 2451
-Check time series file:1899 12 30 20 2451
-Check time series file:1899 12 30 21 2451
-Check time series file:1899 12 30 22 2451
-Check time series file:1899 12 30 23 2451
-Check time series file:1899 12 31 0 2451
+Check time series file:1899 12 30 0 783.12
+Check time series file:1899 12 30 1 783.12
+Check time series file:1899 12 30 2 783.12
+Check time series file:1899 12 30 3 783.12
+Check time series file:1899 12 30 4 783.12
+Check time series file:1899 12 30 5 783.12
+Check time series file:1899 12 30 6 783.12
+Check time series file:1899 12 30 7 783.12
+Check time series file:1899 12 30 8 783.12
+Check time series file:1899 12 30 9 783.12
+Check time series file:1899 12 30 10 783.12
+Check time series file:1899 12 30 11 783.12
+Check time series file:1899 12 30 12 783.12
+Check time series file:1899 12 30 13 783.12
+Check time series file:1899 12 30 14 783.12
+Check time series file:1899 12 30 15 783.12
+Check time series file:1899 12 30 16 783.12
+Check time series file:1899 12 30 17 783.12
+Check time series file:1899 12 30 18 783.12
+Check time series file:1899 12 30 19 783.12
+Check time series file:1899 12 30 20 783.12
+Check time series file:1899 12 30 21 783.12
+Check time series file:1899 12 30 22 783.12
+Check time series file:1899 12 30 23 783.12
+Check time series file:1899 12 31 0 783.12
 Read time series ts_119
 1 time series read from file C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.xys
 
@@ -77,7 +77,7 @@ using precipitation data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Sta
 End of precipitation input file reached.
 Precip. file contains 1 events, simulating first event only
 because LONG_TERM project file card not set in project file.
-total time to init(s):      0.2
+total time to init(s):      0.1
 Running....
 reading precip data from file: C:\Users\bgorberg\Documents\GitHub\Flood_Stage_Maps\RUN_GSSHA\Waialua_FIM_testing\Waialua_FIM_testing.gag
 WARNING: you have a long delta t in your precip file (>1 day) [Time:30 12 1899]
@@ -120,9 +120,9 @@ WARNING: you have a long delta t in your precip file (>1 day) [Time:23  5 1907]
 WARNING: you have a long delta t in your precip file (>1 day) [Time:22  7 1907]
 WARNING: you have a long delta t in your precip file (>1 day) [Time:20  9 1907]
 Initialized Arrays
-simulation duration 330 minutes
+simulation duration 390 minutes
 Event   1 is over due to single event criteria 
-0: Run time: 24334.37(s) 
+0: Run time: 8783.52(s) 
 GSSHA Terminated.
 
 ---- STDERR ----

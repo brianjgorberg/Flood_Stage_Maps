@@ -12,12 +12,15 @@ from pathlib import Path
 import sys
 
 import gdal_functions as gdf
+from osgeo import osr
 
 
 command = sys.argv[1]
 input_file = Path(sys.argv[2])
 
 if command == "define_projection_ASCII":
+
+    print("input_file:", input_file)
 
     gdf.define_projection_ASCII(
         ascii_path=input_file,
@@ -26,10 +29,13 @@ if command == "define_projection_ASCII":
 
 elif command == "convert_ASCII_to_GeoTIFF":
 
-    gdf.convert_ASCII_to_GeoTIFF(
-        ascii_path=input_file,
+    ascii_path = Path(
+        sys.argv[2]
     )
-    
+
+    gdf.convert_ASCII_to_GeoTIFF(
+        ascii_path=ascii_path,
+    )
 elif command == "zonal_mean_from_shapefile":
 
     raster_path = Path(
@@ -68,7 +74,20 @@ elif command == "read_shapefile_to_dataframe":
             rows
         )
     )
+elif command == "raster_meters_to_feet":
 
+    input_tif = Path(
+        sys.argv[2]
+    )
+
+    output_tif = Path(
+        sys.argv[3]
+    )
+
+    gdf.raster_meters_to_feet(
+        input_tif=input_tif,
+        output_tif=output_tif,
+    )
 else:
     raise ValueError(f"Unknown command: {command}")
 

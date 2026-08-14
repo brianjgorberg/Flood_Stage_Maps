@@ -12,7 +12,11 @@ from pathlib import Path
 import csv
 
 import numpy as np
-from osgeo import gdal, ogr
+from osgeo import gdal, osr
+import numpy as np
+from pathlib import Path
+
+
 gdal.UseExceptions()
 
 def define_projection_ASCII(
@@ -53,6 +57,8 @@ def convert_ASCII_to_GeoTIFF(
     """
     Convert an ESRI ASCII grid (.asc) to a GeoTIFF (.tif).
 
+    By default, "_METERS" is added to the output filename.
+
     Parameters
     ----------
     ascii_path : str or Path
@@ -60,8 +66,7 @@ def convert_ASCII_to_GeoTIFF(
 
     output_tif_path : str or Path, optional
         Path for the output GeoTIFF.
-        If None, the GeoTIFF is saved beside the ASCII file
-        using the same filename with a .tif extension.
+        If None, "_METERS.tif" is added to the ASCII filename.
 
     Returns
     -------
@@ -72,7 +77,9 @@ def convert_ASCII_to_GeoTIFF(
     ascii_path = Path(ascii_path)
 
     if output_tif_path is None:
-        output_tif_path = ascii_path.with_suffix(".tif")
+        output_tif_path = ascii_path.with_name(
+            f"{ascii_path.stem}_METERS.tif"
+        )
     else:
         output_tif_path = Path(output_tif_path)
 
@@ -147,10 +154,7 @@ def zonal_mean_from_shapefile(
     None
     """
 
-    from pathlib import Path
 
-    import numpy as np
-    from osgeo import gdal, ogr
 
     gdal.UseExceptions()
 
@@ -622,9 +626,6 @@ def read_shapefile_to_dataframe(
         One dictionary per feature containing the attribute fields.
     """
 
-    from pathlib import Path
-    from osgeo import ogr
-
     shapefile_path = Path(
         shapefile_path
     )
@@ -688,4 +689,89 @@ def read_shapefile_to_dataframe(
 
     return rows
 
+def raster_meters_to_feet(
+    input_tif,
+    output_tif,
+):
+    """
+    Convert raster cell values from meters to feet.
+
+    NoData values are preserved exactly.
+
+    CRS, extent, resolution, geotransform, and
+    spatial coordinates are preserved.
+    """
+
+    from osgeo import gdal
+    
+
+    # Open input raster
+    input_raster = gdal.Open(str(input_tif))
+
+    band = input_raster.GetRasterBand(1)
+
+    array = band.ReadAsArray()
+
+    nodata = band.GetNoDataValue()
+
+    # Create float copy
+    array_feet = array.astype(np.float32)
+
+    # Convert only valid cells
+    if nodata is not None:
+
+        valid = array != nodata
+
+        array_feet[valid] = (
+            array[valid] * 3.28084
+        )
+
+        # Preserve NoData exactly
+        array_feet[~valid] = nodata
+
+    else:
+
+        array_feet = (
+            array.astype(np.float32)
+            * 3.28084
+        )
+
+    # Create output raster
+    driver = gdal.GetDriverByName("GTiff")
+
+    output_raster = driver.Create(
+        str(output_tif),
+        input_raster.RasterXSize,
+        input_raster.RasterYSize,
+        1,
+        gdal.GDT_Float32,
+    )
+
+    # Preserve spatial information
+    output_raster.SetGeoTransform(
+        input_raster.GetGeoTransform()
+    )
+
+    output_raster.SetProjection(
+        input_raster.GetProjection()
+    )
+
+    output_band = output_raster.GetRasterBand(1)
+
+    # Preserve NoData definition
+    if nodata is not None:
+        output_band.SetNoDataValue(nodata)
+
+    # Write converted values
+    output_band.WriteArray(array_feet)
+
+    output_band.FlushCache()
+
+    # Close files
+    output_raster = None
+    input_raster = None
+
+    print(
+        f"Raster converted from meters to feet: {output_tif}"
+    )
 # In[ ]:
